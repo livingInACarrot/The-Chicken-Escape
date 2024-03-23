@@ -23,7 +23,7 @@ public class InstantMovementScript : MonoBehaviour
         animator.speed = animationSpeed;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         // Get input from WASD keys
         input.x = Input.GetAxisRaw("Horizontal");
