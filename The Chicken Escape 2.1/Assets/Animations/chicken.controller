@@ -90,7 +90,7 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: 3322161136748081217}
-    m_Position: {x: 260, y: -10, z: 0}
+    m_Position: {x: 230, y: -10, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -9171721180902779249}
     m_Position: {x: 260, y: 110, z: 0}
@@ -108,7 +108,7 @@ AnimatorStateMachine:
     m_Position: {x: 440, y: -120, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2483432190121730986}
-    m_Position: {x: 120, y: -120, z: 0}
+    m_Position: {x: 120, y: -130, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -127,7 +127,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: chicken_drink
-  m_Speed: 1
+  m_Speed: 8
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -140,7 +140,7 @@ AnimatorState:
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
   m_Motion: {fileID: 7400000, guid: 4b5ee3e7cde42c046a1979711ac0d579, type: 2}
-  m_Tag: 
+  m_Tag: Drink
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
@@ -178,7 +178,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: chicken_eat
-  m_Speed: 1
+  m_Speed: 10
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -191,7 +191,7 @@ AnimatorState:
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
   m_Motion: {fileID: 7400000, guid: c3130ee48dc25b5478543f4643f5595c, type: 2}
-  m_Tag: 
+  m_Tag: Eat
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
