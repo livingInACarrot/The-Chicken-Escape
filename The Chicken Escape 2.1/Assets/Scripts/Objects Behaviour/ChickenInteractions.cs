@@ -6,28 +6,27 @@ using TMPro;
 public class ChickenInteractions : MonoBehaviour
 {
     private Animator chickenAnimator;
-    //public Button eatButton;
-    //public Button drinkButton;
-    private Button button;
+    public Button button;
     private bool isFeeding = false;
 
     private void Start()
     {
         chickenAnimator = GetComponent<Animator>();
-        //eatButton.gameObject.SetActive(false);
-        //drinkButton.gameObject.SetActive(false);
-        //button.gameObject.SetActive(false);
+        button.gameObject.SetActive(false);
     }
     private void OnTriggerStay2D(Collider2D other)
     {
-        Debug.Log("Stay on Collider");
-        button = other.GetComponentInChildren<Button>();
-        button.gameObject.SetActive(true);
+        // Ставим кнопку над объектом
+        Vector3 otherCenter = other.bounds.center;
+        RectTransform buttonRectTransform = button.GetComponent<RectTransform>();
+        buttonRectTransform.position = otherCenter;
+        buttonRectTransform.anchoredPosition += new Vector2(0, 350);
+
         if (!isFeeding)
         {
             if (other.CompareTag("Eat"))
             {
-                //eatButton.gameObject.SetActive(true);
+                button.gameObject.SetActive(true);
                 button.GetComponentInChildren<TMP_Text>().text = "eat";
                 button.onClick.AddListener(delegate() {
                     button.GetComponentInChildren<TMP_Text>().text = "stop";
@@ -37,7 +36,7 @@ public class ChickenInteractions : MonoBehaviour
             }
             else if (other.CompareTag("Drink"))
             {
-                //drinkButton.gameObject.SetActive(true);
+                button.gameObject.SetActive(true);
                 button.GetComponentInChildren<TMP_Text>().text = "drink";
                 button.onClick.AddListener(delegate () {
                     button.GetComponentInChildren<TMP_Text>().text = "stop";
@@ -46,6 +45,7 @@ public class ChickenInteractions : MonoBehaviour
             }
             else if (other.CompareTag("Sleep"))
             {
+                button.gameObject.SetActive(true);
                 button.GetComponentInChildren<TMP_Text>().text = "sleep";
                 button.onClick.AddListener(delegate () {
                     Vector2 colliderPosition = other.transform.position;
@@ -59,8 +59,6 @@ public class ChickenInteractions : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        //eatButton.gameObject.SetActive(false);
-        //drinkButton.gameObject.SetActive(false);
         button.gameObject.SetActive(false);
         Stop();
     }
@@ -69,9 +67,7 @@ public class ChickenInteractions : MonoBehaviour
         isFeeding = false;
         NeedsController.isEating = false;
         NeedsController.isDrinking = false;
-        //eatButton.GetComponentInChildren<TMP_Text>().text = "eat";
-        //drinkButton.GetComponentInChildren<TMP_Text>().text = "drink";
-        chickenAnimator.Play("chicken_run");
+        chickenAnimator.Play("chicken_idle");
     }
 
     IEnumerator PlayEatAnimation()

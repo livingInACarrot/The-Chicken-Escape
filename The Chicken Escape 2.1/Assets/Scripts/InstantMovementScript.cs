@@ -5,14 +5,15 @@ public class InstantMovementScript : MonoBehaviour
     public float moveSpeed = 5f;
     private Vector2 input;
     private Animator animator;
-
+    
     // Variable for smoothing the speed parameter
     private float currentSpeed;
     public float smoothTime = 0.1f;
     public float animationSpeed = 1f;
+    //public int chickenNumber;
 
     // NPC variables
-    private float maxDist = 10;    // Макс. расстояние, на которое ИИ курочки может отойти за раз
+    private float maxDist = 6;    // Макс. расстояние, на которое ИИ курочки может отойти за раз
     private Vector2 way;
     private float range = 1;
     private float pauseDuration = 4;
@@ -128,13 +129,6 @@ public class InstantMovementScript : MonoBehaviour
         {
             transform.localScale = new Vector3(1, 1, 1);
         }
-    }
-    public void ChangePlayer()
-    {
-        if (CompareTag("NPC"))
-            tag = "Player";
-        else if (CompareTag("Player"))
-            tag = "NPC";
     }
     private void OnCollisionStay2D(Collision2D collision)
     {

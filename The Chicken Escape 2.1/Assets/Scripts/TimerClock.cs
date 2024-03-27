@@ -7,7 +7,7 @@ public class TimerClock : MonoBehaviour
     public TMP_Text dayText;
     private int day = 1;
     public static float dayLength = 14; // Сколько реальных минут длится игровой день
-    private float currentTime;
+    public static float currentTime;
     private bool isTimerRunning = true;
 
     void Start()
@@ -49,5 +49,13 @@ public class TimerClock : MonoBehaviour
     {
         string dayString = "day " + day;
         dayText.text = dayString;
+    }
+    public static int Hours()
+    {
+        return Mathf.FloorToInt(currentTime / 60);
+    }
+    public static int Minutes()
+    {
+        return Mathf.FloorToInt(currentTime % 60);
     }
 }
