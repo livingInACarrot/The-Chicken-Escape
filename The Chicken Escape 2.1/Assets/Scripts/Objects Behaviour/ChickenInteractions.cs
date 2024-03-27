@@ -6,14 +6,13 @@ using TMPro;
 public class ChickenInteractions : MonoBehaviour
 {
     public Animator chickenAnimator;
-    public Button eatButton; // Assign this in the inspector
-    public Button drinkButton; // Assign this in the inspector
+    public Button eatButton;
+    public Button drinkButton;
     private bool isFeeding = false;
 
     private void Start()
     {
         chickenAnimator = GetComponent<Animator>();
-        // Hide the buttons initially
         eatButton.gameObject.SetActive(false);
         drinkButton.gameObject.SetActive(false);
     }
@@ -24,7 +23,6 @@ public class ChickenInteractions : MonoBehaviour
         {
             if (other.CompareTag("Eat"))
             {
-                // Show the eating button.
                 eatButton.gameObject.SetActive(true);
                 eatButton.onClick.AddListener(delegate() {
                     eatButton.GetComponentInChildren<TMP_Text>().text = "stop";
@@ -32,10 +30,8 @@ public class ChickenInteractions : MonoBehaviour
                 });
 
             }
-            // Check for the water object by tag.
             else if (other.CompareTag("Drink"))
             {
-                // Show the drinking button.
                 drinkButton.gameObject.SetActive(true);
                 drinkButton.onClick.AddListener(delegate () {
                     drinkButton.GetComponentInChildren<TMP_Text>().text = "stop";
@@ -54,6 +50,8 @@ public class ChickenInteractions : MonoBehaviour
     private void Stop()
     {
         isFeeding = false;
+        NeedsController.isEating = false;
+        NeedsController.isDrinking = false;
         eatButton.GetComponentInChildren<TMP_Text>().text = "eat";
         drinkButton.GetComponentInChildren<TMP_Text>().text = "drink";
         chickenAnimator.Play("chicken_run");
@@ -62,6 +60,7 @@ public class ChickenInteractions : MonoBehaviour
     IEnumerator PlayEatAnimation()
     {
         isFeeding = true;
+        NeedsController.isEating = true;
         chickenAnimator.Play("chicken_eat");
         eatButton.onClick.AddListener(() => Stop());
         yield return new WaitForSeconds(4);
@@ -70,6 +69,7 @@ public class ChickenInteractions : MonoBehaviour
     IEnumerator PlayDrinkAnimation()
     {
         isFeeding = true;
+        NeedsController.isDrinking = true;
         chickenAnimator.Play("chicken_drink");
         drinkButton.onClick.AddListener(() => Stop());
         yield return new WaitForSeconds(5);
