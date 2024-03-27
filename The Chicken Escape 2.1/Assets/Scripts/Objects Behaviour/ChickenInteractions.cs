@@ -5,37 +5,53 @@ using TMPro;
 
 public class ChickenInteractions : MonoBehaviour
 {
-    public Animator chickenAnimator;
-    public Button eatButton;
-    public Button drinkButton;
+    private Animator chickenAnimator;
+    //public Button eatButton;
+    //public Button drinkButton;
+    private Button button;
     private bool isFeeding = false;
 
     private void Start()
     {
         chickenAnimator = GetComponent<Animator>();
-        eatButton.gameObject.SetActive(false);
-        drinkButton.gameObject.SetActive(false);
+        //eatButton.gameObject.SetActive(false);
+        //drinkButton.gameObject.SetActive(false);
+        //button.gameObject.SetActive(false);
     }
-
     private void OnTriggerStay2D(Collider2D other)
     {
+        Debug.Log("Stay on Collider");
+        button = other.GetComponentInChildren<Button>();
+        button.gameObject.SetActive(true);
         if (!isFeeding)
         {
             if (other.CompareTag("Eat"))
             {
-                eatButton.gameObject.SetActive(true);
-                eatButton.onClick.AddListener(delegate() {
-                    eatButton.GetComponentInChildren<TMP_Text>().text = "stop";
+                //eatButton.gameObject.SetActive(true);
+                button.GetComponentInChildren<TMP_Text>().text = "eat";
+                button.onClick.AddListener(delegate() {
+                    button.GetComponentInChildren<TMP_Text>().text = "stop";
                     StartCoroutine(PlayEatAnimation()); 
                 });
 
             }
             else if (other.CompareTag("Drink"))
             {
-                drinkButton.gameObject.SetActive(true);
-                drinkButton.onClick.AddListener(delegate () {
-                    drinkButton.GetComponentInChildren<TMP_Text>().text = "stop";
+                //drinkButton.gameObject.SetActive(true);
+                button.GetComponentInChildren<TMP_Text>().text = "drink";
+                button.onClick.AddListener(delegate () {
+                    button.GetComponentInChildren<TMP_Text>().text = "stop";
                     StartCoroutine(PlayDrinkAnimation());
+                });
+            }
+            else if (other.CompareTag("Sleep"))
+            {
+                button.GetComponentInChildren<TMP_Text>().text = "sleep";
+                button.onClick.AddListener(delegate () {
+                    Vector2 colliderPosition = other.transform.position;
+                    transform.position = colliderPosition;
+                    button.GetComponentInChildren<TMP_Text>().text = "stop";
+                    StartCoroutine(PlaySleepAnimation());
                 });
             }
         }
@@ -43,8 +59,9 @@ public class ChickenInteractions : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        eatButton.gameObject.SetActive(false);
-        drinkButton.gameObject.SetActive(false);
+        //eatButton.gameObject.SetActive(false);
+        //drinkButton.gameObject.SetActive(false);
+        button.gameObject.SetActive(false);
         Stop();
     }
     private void Stop()
@@ -52,8 +69,8 @@ public class ChickenInteractions : MonoBehaviour
         isFeeding = false;
         NeedsController.isEating = false;
         NeedsController.isDrinking = false;
-        eatButton.GetComponentInChildren<TMP_Text>().text = "eat";
-        drinkButton.GetComponentInChildren<TMP_Text>().text = "drink";
+        //eatButton.GetComponentInChildren<TMP_Text>().text = "eat";
+        //drinkButton.GetComponentInChildren<TMP_Text>().text = "drink";
         chickenAnimator.Play("chicken_run");
     }
 
@@ -62,7 +79,7 @@ public class ChickenInteractions : MonoBehaviour
         isFeeding = true;
         NeedsController.isEating = true;
         chickenAnimator.Play("chicken_eat");
-        eatButton.onClick.AddListener(() => Stop());
+        button.onClick.AddListener(() => Stop());
         yield return new WaitForSeconds(4);
     }
 
@@ -71,7 +88,14 @@ public class ChickenInteractions : MonoBehaviour
         isFeeding = true;
         NeedsController.isDrinking = true;
         chickenAnimator.Play("chicken_drink");
-        drinkButton.onClick.AddListener(() => Stop());
+        button.onClick.AddListener(() => Stop());
+        yield return new WaitForSeconds(5);
+    }
+    IEnumerator PlaySleepAnimation()
+    {
+        NeedsController.isSleeping = true;
+        chickenAnimator.Play("chicken_sleep");
+        button.onClick.AddListener(() => Stop());
         yield return new WaitForSeconds(5);
     }
 }
