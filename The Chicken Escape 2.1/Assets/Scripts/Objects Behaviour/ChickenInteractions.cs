@@ -7,7 +7,6 @@ public class ChickenInteractions : MonoBehaviour
 {
     private Animator chickenAnimator;
     public Button button;
-    private bool isFeeding = false;
 
     private void Start()
     {
@@ -20,9 +19,9 @@ public class ChickenInteractions : MonoBehaviour
         Vector3 otherCenter = other.bounds.center;
         RectTransform buttonRectTransform = button.GetComponent<RectTransform>();
         buttonRectTransform.position = otherCenter;
-        buttonRectTransform.anchoredPosition += new Vector2(0, 350);
+        buttonRectTransform.anchoredPosition += new Vector2(0, 300);
 
-        if (!isFeeding)
+        if (!NeedsController.isEating && !NeedsController.isDrinking && !NeedsController.isSleeping)
         {
             if (other.CompareTag("Eat"))
             {
@@ -47,10 +46,11 @@ public class ChickenInteractions : MonoBehaviour
             {
                 button.gameObject.SetActive(true);
                 button.GetComponentInChildren<TMP_Text>().text = "sleep";
+                Vector2 colliderPosition = other.transform.position;
                 button.onClick.AddListener(delegate () {
-                    Vector2 colliderPosition = other.transform.position;
                     transform.position = colliderPosition;
                     button.GetComponentInChildren<TMP_Text>().text = "stop";
+                    //chickenAnimator.SetBool("isSleeping", true);
                     StartCoroutine(PlaySleepAnimation());
                 });
             }
@@ -64,15 +64,14 @@ public class ChickenInteractions : MonoBehaviour
     }
     private void Stop()
     {
-        isFeeding = false;
         NeedsController.isEating = false;
         NeedsController.isDrinking = false;
+        NeedsController.isSleeping = false;
         chickenAnimator.Play("chicken_idle");
     }
 
     IEnumerator PlayEatAnimation()
     {
-        isFeeding = true;
         NeedsController.isEating = true;
         chickenAnimator.Play("chicken_eat");
         button.onClick.AddListener(() => Stop());
@@ -81,7 +80,6 @@ public class ChickenInteractions : MonoBehaviour
 
     IEnumerator PlayDrinkAnimation()
     {
-        isFeeding = true;
         NeedsController.isDrinking = true;
         chickenAnimator.Play("chicken_drink");
         button.onClick.AddListener(() => Stop());
@@ -92,6 +90,6 @@ public class ChickenInteractions : MonoBehaviour
         NeedsController.isSleeping = true;
         chickenAnimator.Play("chicken_sleep");
         button.onClick.AddListener(() => Stop());
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(30);
     }
 }
