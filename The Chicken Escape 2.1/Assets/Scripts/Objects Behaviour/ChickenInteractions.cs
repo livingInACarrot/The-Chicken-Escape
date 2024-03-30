@@ -48,7 +48,7 @@ public class ChickenInteractions : MonoBehaviour
                 button.GetComponentInChildren<TMP_Text>().text = "sleep";
                 Vector2 colliderPosition = other.transform.position;
                 button.onClick.AddListener(delegate () {
-                    transform.position = colliderPosition;
+                    //transform.position = colliderPosition;
                     button.GetComponentInChildren<TMP_Text>().text = "stop";
                     //chickenAnimator.SetBool("isSleeping", true);
                     StartCoroutine(PlaySleepAnimation());
