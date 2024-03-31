@@ -14,6 +14,7 @@ public class DenisBehaviour : MonoBehaviour
 
     public List<Transform> routePickEggs;
     public List<Transform> routeToBarn;
+    public List<Transform> routeFromBarn;
     public List<Transform> routeWaterGarden;
     public List<Transform> routeBringChicksHome;
     public List<Transform> routeFromCoop;
@@ -27,7 +28,6 @@ public class DenisBehaviour : MonoBehaviour
         way = routeToBarn[0].position;
         MirrorAnimation();
     }
-
     void Update()
     {
         hours = TimerClock.Hours();
@@ -61,6 +61,7 @@ public class DenisBehaviour : MonoBehaviour
     {
         HideAllPoints(ref routePickEggs);
         HideAllPoints(ref routeToBarn);
+        HideAllPoints(ref routeFromBarn);
         HideAllPoints(ref routeWaterGarden);
         HideAllPoints(ref routeBringChicksHome);
     }
@@ -106,7 +107,10 @@ public class DenisBehaviour : MonoBehaviour
         {
             ++currentDestination;
             if (currentDestination >= routeToBarn.Count)
+            {
+                currentDestination = 0;
                 return true;
+            }
             way = routeToBarn[currentDestination].position;
             MirrorAnimation();
         }
@@ -124,8 +128,8 @@ public class DenisBehaviour : MonoBehaviour
         transform.position = Vector2.MoveTowards(transform.position, way, speed * Time.deltaTime);
         if (Vector2.Distance(transform.position, way) < range)
         {
-            --currentDestination;
-            if (currentDestination < 0)
+            ++currentDestination;
+            if (currentDestination >= routeFromBarn.Count)
             {
                 currentDestination = 0;
                 return true;

@@ -107,7 +107,6 @@ public class InstantMovementScript : MonoBehaviour
     {
         way = new Vector2(Random.Range(transform.position.x - maxDist, transform.position.x + maxDist),
             Random.Range(transform.position.y - maxDist, transform.position.y + maxDist));
-        // Mirror the sprite when moving left
         if (way.x < transform.position.x)
         {
             transform.localScale = new Vector3(-1, 1, 1);
@@ -117,24 +116,11 @@ public class InstantMovementScript : MonoBehaviour
             transform.localScale = new Vector3(1, 1, 1);
         }
     }
-    private void NewDestination(Vector2 oldway)
-    {
-        way = new Vector2(Random.Range(transform.position.x - oldway.x, transform.position.x), 
-            Random.Range(transform.position.y - oldway.y, transform.position.x));
-        if (way.x < transform.position.x)
-        {
-            transform.localScale = new Vector3(-1, 1, 1);
-        }
-        else if (way.x > transform.position.x)
-        {
-            transform.localScale = new Vector3(1, 1, 1);
-        }
-    }
-    private void OnCollisionStay2D(Collision2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
         if (CompareTag("NPC"))
         {
-            NewDestination(way);
+            NewDestination();
         }
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 public class BallPhysicsScript : MonoBehaviour
 {
     public Rigidbody2D ballRigidbody;
-    public float punchForce = 1f;
+    public float punchForce = 2f;
     public float dynamicCollisionForceMultiplier = 1f;
     public float staticCollisionDamping = 1f;
     public float rotationSpeedMultiplier = 100f; // Control how much the ball rotates relative to its speed

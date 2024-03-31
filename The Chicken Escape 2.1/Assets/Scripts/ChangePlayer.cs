@@ -22,7 +22,6 @@ public class ChangePlayer : MonoBehaviour
             chickens[i].tag = "NPC";
         }
     }
-
     public void ChooseChicken(int chickenNumber)
     {
         // Сначала сбрасываем тег текущей курицы на NPC

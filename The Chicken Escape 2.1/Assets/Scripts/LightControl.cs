@@ -7,7 +7,7 @@ public class LightControl : MonoBehaviour
     private Light2D _light;
     private float _startTime;
 
-    private void Awake()
+    private void Start()
     {
         _light = GetComponent<Light2D>();
         _startTime = Time.time;
