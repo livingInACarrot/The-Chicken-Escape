@@ -116,9 +116,9 @@ public class InstantMovementScript : MonoBehaviour
             transform.localScale = new Vector3(1, 1, 1);
         }
     }
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionStay2D(Collision2D collision)
     {
-        if (CompareTag("NPC"))
+        if (CompareTag("NPC") && isMoving)
         {
             NewDestination();
         }

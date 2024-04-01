@@ -7,11 +7,27 @@ public class ChickenInteractions : MonoBehaviour
 {
     private Animator chickenAnimator;
     public Button button;
-
+    public static bool isEating = false;
+    public static bool isDrinking = false;
+    public static bool isSleeping = false;
+    public static int foodXP = 10;
+    public static int waterXP = 10;
+    public static int sleepXP = 10;
+    public static int eggs = 1;
+    public static void SetAllXP(GameObject obj)
+    {
+        if (obj.CompareTag("Player"))
+        {
+            NeedsController.SetXP(foodXP, "Eat");
+            NeedsController.SetXP(waterXP, "Drink");
+            NeedsController.SetXP(sleepXP, "Sleep");
+        }
+    }
     private void Start()
     {
         chickenAnimator = GetComponent<Animator>();
         button.gameObject.SetActive(false);
+        SetAllXP(gameObject);
     }
     private void OnTriggerStay2D(Collider2D other)
     {
@@ -21,7 +37,7 @@ public class ChickenInteractions : MonoBehaviour
         buttonRectTransform.position = otherCenter;
         buttonRectTransform.anchoredPosition += new Vector2(0, 300);
 
-        if (!NeedsController.isEating && !NeedsController.isDrinking && !NeedsController.isSleeping)
+        if (!isEating && !isDrinking && !isSleeping)
         {
             if (other.CompareTag("Eat"))
             {
@@ -64,15 +80,15 @@ public class ChickenInteractions : MonoBehaviour
     }
     private void Stop()
     {
-        NeedsController.isEating = false;
-        NeedsController.isDrinking = false;
-        NeedsController.isSleeping = false;
+        isEating = false;
+        isDrinking = false;
+        isSleeping = false;
         chickenAnimator.Play("chicken_idle");
     }
 
     IEnumerator PlayEatAnimation()
     {
-        NeedsController.isEating = true;
+        isEating = true;
         chickenAnimator.Play("chicken_eat");
         button.onClick.AddListener(() => Stop());
         yield return new WaitForSeconds(4);
@@ -80,14 +96,14 @@ public class ChickenInteractions : MonoBehaviour
 
     IEnumerator PlayDrinkAnimation()
     {
-        NeedsController.isDrinking = true;
+        isDrinking = true;
         chickenAnimator.Play("chicken_drink");
         button.onClick.AddListener(() => Stop());
         yield return new WaitForSeconds(5);
     }
     IEnumerator PlaySleepAnimation()
     {
-        NeedsController.isSleeping = true;
+        isSleeping = true;
         chickenAnimator.Play("chicken_sleep");
         button.onClick.AddListener(() => Stop());
         yield return new WaitForSeconds(30);

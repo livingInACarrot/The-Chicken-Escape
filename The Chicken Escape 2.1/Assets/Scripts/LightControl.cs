@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 public class LightControl : MonoBehaviour
 {
-    public float duration = 5;    //TimerClock.dayLength * 10;
+    public float duration = 140;    //TimerClock.dayLength * 10;
     [SerializeField] private Gradient gradient;
     private Light2D _light;
     private float _startTime;
@@ -11,6 +11,7 @@ public class LightControl : MonoBehaviour
     {
         _light = GetComponent<Light2D>();
         _startTime = Time.time;
+        //duration = TimerClock.dayLength;
     }
 
     void Update()

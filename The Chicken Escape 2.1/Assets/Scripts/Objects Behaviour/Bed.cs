@@ -27,16 +27,16 @@ public class Bed : MonoBehaviour
     }
     IEnumerator PlaySleepAnimation(Animator animator)
     {
-        NeedsController.isSleeping = true;
+        ChickenInteractions.isSleeping = true;
         animator.Play("chicken_sleep");
         button.onClick.AddListener(() => Stop(animator));
         yield return new WaitForSeconds(300);
     }
     private void Stop(Animator animator)
     {
-        NeedsController.isEating = false;
-        NeedsController.isDrinking = false;
-        NeedsController.isSleeping = false;
+        ChickenInteractions.isEating = false;
+        ChickenInteractions.isDrinking = false;
+        ChickenInteractions.isSleeping = false;
         animator.Play("chicken_idle");
     }
     private void OnTriggerExit2D(Collider2D other)

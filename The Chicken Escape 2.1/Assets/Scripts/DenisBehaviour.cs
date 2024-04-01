@@ -134,7 +134,7 @@ public class DenisBehaviour : MonoBehaviour
                 currentDestination = 0;
                 return true;
             }
-            way = routeToBarn[currentDestination].position;
+            way = routeFromBarn[currentDestination].position;
             MirrorAnimation();
         }
         return false;
