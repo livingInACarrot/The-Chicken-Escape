@@ -7,27 +7,15 @@ public class ChickenInteractions : MonoBehaviour
 {
     private Animator chickenAnimator;
     public Button button;
-    public static bool isEating = false;
-    public static bool isDrinking = false;
-    public static bool isSleeping = false;
-    public static int foodXP = 10;
-    public static int waterXP = 10;
-    public static int sleepXP = 10;
-    public static int eggs = 1;
-    public static void SetAllXP(GameObject obj)
-    {
-        if (obj.CompareTag("Player"))
-        {
-            NeedsController.SetXP(foodXP, "Eat");
-            NeedsController.SetXP(waterXP, "Drink");
-            NeedsController.SetXP(sleepXP, "Sleep");
-        }
-    }
-    private void Start()
+
+    public bool isEating = false;
+    public bool isDrinking = false;
+    public bool isSleeping = false;
+
+    void Start()
     {
         chickenAnimator = GetComponent<Animator>();
         button.gameObject.SetActive(false);
-        SetAllXP(gameObject);
     }
     private void OnTriggerStay2D(Collider2D other)
     {

@@ -12,6 +12,7 @@ public class NeedsController : MonoBehaviour
     public static Image foodImage;
     public static Image waterImage;
     public static Image sleepImage;
+
     public static Dictionary<int, Sprite> dict;
     public Sprite xp10;
     public Sprite xp9;
@@ -23,6 +24,7 @@ public class NeedsController : MonoBehaviour
     public Sprite xp3;
     public Sprite xp2;
     public Sprite xp1;
+
     void Start()
     {
         dict = new()
@@ -42,30 +44,66 @@ public class NeedsController : MonoBehaviour
         waterImage = waterImageInit;
         sleepImage = sleepImageInit;
     }
-    public static void LowerXP(ref int xp, string tag)
+    public static void ShowNeeds(NeedsChanging chick)
     {
-        if (xp > 1)
-            --xp;
-        SwitchNeeds(xp, tag);
+        foodImage.sprite = dict[chick.foodXP];
+        waterImage.sprite = dict[chick.waterXP];
+        sleepImage.sprite = dict[chick.sleepXP];
     }
-    public static void RaiseXP(ref int xp, string tag)
+    /*
+    public static void UpdateNeeds(ChickenInteractions chick)
     {
-        if (xp < 10)
-            ++xp;
-        SwitchNeeds(xp, tag);
+        currentTimeF += Time.deltaTime;
+        currentTimeW += Time.deltaTime;
+        currentTimeS += Time.deltaTime;
+        if (chick.isEating)
+        {
+            if (currentTimeF > recoveringSpeedF)
+            {
+                currentTimeF = 0;
+                if (chick.foodXP < 10)
+                    chick.foodXP++;
+            }
+        }
+        else if (chick.isDrinking)
+        {
+            if (currentTimeW > recoveringSpeedW)
+            {
+                currentTimeW = 0;
+                if (chick.waterXP < 10)
+                    chick.waterXP++;
+            }
+        }
+        else if (chick.isSleeping)
+        {
+            if (currentTimeS > recoveringSpeedS)
+            {
+                currentTimeS = 0;
+                if (chick.sleepXP < 10)
+                    chick.sleepXP++;
+            }
+        }
+        else
+        {
+            if (currentTimeF > decreasingSpeedF)
+            {
+                currentTimeF = 0;
+                if (chick.foodXP > 1)
+                    chick.foodXP--;
+            }
+            if (currentTimeW > decreasingSpeedW)
+            {
+                currentTimeW = 0;
+                if (chick.waterXP > 1)
+                    chick.waterXP--;
+            }
+            if (currentTimeS > decreasingSpeedS)
+            {
+                currentTimeS = 0;
+                if (chick.sleepXP > 1)
+                    chick.sleepXP--;
+            }
+        }
     }
-    public static void SetXP(int xp, string tag)
-    {
-        SwitchNeeds(xp, tag);
-    }
-    public static void SwitchNeeds(int xp, string tag)
-    {
-        if (tag == "Eat")
-            foodImage.sprite = dict[xp];
-        else if (tag == "Drink")
-            waterImage.sprite = dict[xp];
-        else if (tag == "Sleep")
-            sleepImage.sprite = dict[xp];
-    }
-
+    */
 }

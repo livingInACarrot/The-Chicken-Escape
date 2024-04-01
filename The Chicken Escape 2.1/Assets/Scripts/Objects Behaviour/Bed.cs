@@ -6,7 +6,9 @@ using TMPro;
 
 public class Bed : MonoBehaviour
 {
+    /*
     public Button button;
+    
     void Start()
     {
         button.gameObject.SetActive(false);
@@ -44,4 +46,5 @@ public class Bed : MonoBehaviour
         button.gameObject.SetActive(false);
         Stop(other.GetComponent<Animator>());
     }
+    */
 }

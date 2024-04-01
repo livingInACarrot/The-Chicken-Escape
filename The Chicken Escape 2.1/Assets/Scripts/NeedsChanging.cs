@@ -6,55 +6,92 @@ using UnityEngine.UI;
 // This class is responsible for needs change
 public class NeedsChanging : MonoBehaviour
 {
-    //private Image needImage;
-    //private int currentXP = 10;
-    public float secondsPerXP = 5;     // 1 xp decreasing speed (seconds)
-    public float recoveringSpeed = 3;  // 1 xp increasing speed (seconds)
-    private float currentTime = 0;
+    ChickenInteractions chick;
+
+    public float decreasingSpeedF; // 1 xp decreasing speed (seconds)
+    public float recoveringSpeedF; // 1 xp increasing speed (seconds)
+    public float decreasingSpeedW;
+    public float recoveringSpeedW;
+    public float decreasingSpeedS;
+    public float recoveringSpeedS;
+
+    private float currentTimeF = 0;
+    private float currentTimeW = 0;
+    private float currentTimeS = 0;
+
+    public int foodXP = 10;
+    public int waterXP = 10;
+    public int sleepXP = 10;
+    public int eggs = 1;
 
     void Start()
     {
-        //needImage = GetComponent<Image>();
-        //NeedsController.SetXP(currentXP);
+        chick = GetComponent<ChickenInteractions>();
+        decreasingSpeedF = TimerClock.dayLength * 60 / 10 / 2.4f;
+        recoveringSpeedF = 2.5f;
+        decreasingSpeedW = TimerClock.dayLength * 60 / 10 / 2f;
+        recoveringSpeedW = 2.5f;
+        decreasingSpeedS = TimerClock.dayLength * 60 / 10 / 1.3f;
+        recoveringSpeedS = TimerClock.dayLength * 60 / 10 / 24 * 8;
     }
-
     void Update()
     {
-        currentTime += Time.deltaTime;
-        if (ChickenInteractions.isEating && CompareTag("Eat"))
+        UpdateNeeds();
+        if (CompareTag("Player"))
+            NeedsController.ShowNeeds(this);
+    }
+    public void UpdateNeeds()
+    {
+        currentTimeF += Time.deltaTime;
+        currentTimeW += Time.deltaTime;
+        currentTimeS += Time.deltaTime;
+        if (chick.isEating)
         {
-            if (currentTime > recoveringSpeed)
+            if (currentTimeF > recoveringSpeedF)
             {
-                currentTime = 0;
-                NeedsController.RaiseXP(ref ChickenInteractions.foodXP, "Eat");
+                currentTimeF = 0;
+                if (foodXP < 10)
+                    foodXP++;
             }
         }
-        else if (ChickenInteractions.isDrinking && CompareTag("Drink"))
+        else if (chick.isDrinking)
         {
-            if (currentTime > recoveringSpeed)
+            if (currentTimeW > recoveringSpeedW)
             {
-                currentTime = 0;
-                NeedsController.RaiseXP(ref ChickenInteractions.waterXP, "Drink");
+                currentTimeW = 0;
+                if (waterXP < 10)
+                    waterXP++;
             }
         }
-        else if (ChickenInteractions.isSleeping && CompareTag("Sleep"))
+        else if (chick.isSleeping)
         {
-            if (currentTime > recoveringSpeed)
+            if (currentTimeS > recoveringSpeedS)
             {
-                currentTime = 0;
-                NeedsController.RaiseXP(ref ChickenInteractions.sleepXP, "Sleep");
+                currentTimeS = 0;
+                if (sleepXP < 10)
+                    sleepXP++;
             }
         }
         else
         {
-            if (currentTime > secondsPerXP)
+            if (currentTimeF > decreasingSpeedF)
             {
-                currentTime = 0;
-                NeedsController.LowerXP(ref ChickenInteractions.foodXP, "Eat");
-                NeedsController.LowerXP(ref ChickenInteractions.waterXP, "Drink");
-                NeedsController.LowerXP(ref ChickenInteractions.sleepXP, "Sleep");
+                currentTimeF = 0;
+                if (foodXP > 1)
+                    foodXP--;
+            }
+            if (currentTimeW > decreasingSpeedW)
+            {
+                currentTimeW = 0;
+                if (waterXP > 1)
+                    waterXP--;
+            }
+            if (currentTimeS > decreasingSpeedS)
+            {
+                currentTimeS = 0;
+                if (sleepXP > 1)
+                    sleepXP--;
             }
         }
-
     }
 }

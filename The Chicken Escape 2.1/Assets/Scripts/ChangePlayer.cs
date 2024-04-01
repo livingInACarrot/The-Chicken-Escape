@@ -30,7 +30,6 @@ public class ChangePlayer : MonoBehaviour
         // «атем устанавливаем тег новой курицы на Player
         currentChicken = chickens[chickenNumber];
         currentChicken.tag = "Player";
-        ChickenInteractions.SetAllXP(currentChicken);
         SmoothCameraFollow.target = currentChicken.GetComponent<Transform>();
     }
 }
