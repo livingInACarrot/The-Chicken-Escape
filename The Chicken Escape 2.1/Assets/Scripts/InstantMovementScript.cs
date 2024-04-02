@@ -10,10 +10,9 @@ public class InstantMovementScript : MonoBehaviour
     private float currentSpeed;
     public float smoothTime = 0.1f;
     public float animationSpeed = 1f;
-    //public int chickenNumber;
 
     // NPC variables
-    private float maxDist = 6;    // Макс. расстояние, на которое ИИ курочки может отойти за раз
+    private float maxDist = 6;
     private Vector2 way;
     private float range = 1;
     private float pauseDuration = 4;
@@ -80,6 +79,14 @@ public class InstantMovementScript : MonoBehaviour
 
         if (isMoving)
         {
+            // Counting current move speed
+            /*
+            Vector2 direction = way - (Vector2)transform.position;
+            direction.Normalize();
+            float currentMoveSpeed = direction.magnitude * NPCmoveSpeed;
+            if (currentMoveSpeed + range < NPCmoveSpeed)
+                NewDestination();
+            */
             if (Vector2.Distance(transform.position, way) > range)
             {
                 transform.position = Vector2.MoveTowards(transform.position, way, NPCmoveSpeed * Time.deltaTime);
@@ -116,11 +123,26 @@ public class InstantMovementScript : MonoBehaviour
             transform.localScale = new Vector3(1, 1, 1);
         }
     }
-    private void OnCollisionStay2D(Collision2D collision)
+    private void NewDestination(Vector2 oldway)
     {
-        if (CompareTag("NPC") && isMoving)
+        way = new Vector2(transform.position.x - oldway.x, transform.position.y - oldway.y);
+        if (way.x < transform.position.x)
         {
-            NewDestination();
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
+        else if (way.x > transform.position.x)
+        {
+            transform.localScale = new Vector3(1, 1, 1);
         }
     }
+
+    /*
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (!collision.gameObject.CompareTag("Player") && !collision.gameObject.CompareTag("NPC") && CompareTag("NPC") && isMoving)
+        {
+            NewDestination(way);
+        }
+    }
+    */
 }
