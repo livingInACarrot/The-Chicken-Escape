@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,12 +22,12 @@ public class DenisBehaviour : MonoBehaviour
     private int currentDestination = 0;
     private Vector2 way;
 
+    public GameObject wateringCan;
+
     void Start()
     {
         animator = GetComponent<Animator>();
         HideAllPoints();
-        way = routeToBarn[0].position;
-        MirrorAnimation();
     }
     void Update()
     {
@@ -35,25 +36,36 @@ public class DenisBehaviour : MonoBehaviour
 
         if (!inProgress)
         {
+            currentDestination = 0;
             if (hours == 11 && minutes == 30)
             {
-                //StartCoroutine(IPickEggs());
+                way = routePickEggs[0].position;
+                MirrorAnimation();
+                //StartCoroutine(GoSomeWhere(PickEggs()));
             }
             if (hours == 13 && minutes == 0)
             {
-                StartCoroutine(IGoToBarn());
+                way = routeToBarn[0].position;
+                MirrorAnimation();
+                StartCoroutine(GoSomeWhere(GoToBarn()));
             }
             if (hours == 15 && minutes == 0)
             {
-                StartCoroutine(IGoFromBarn());
+                way = routeFromBarn[0].position;
+                MirrorAnimation();
+                StartCoroutine(GoSomeWhere(GoFromBarn()));
             }
             if (hours == 17 && minutes == 0)
             {
-                //StartCoroutine(IWaterGarden());
+                way = routeWaterGarden[0].position;
+                MirrorAnimation();
+                //StartCoroutine(GoSomeWhere(WaterGarden()));
             }
             if (hours == 20 && minutes == 0)
             {
-                //StartCoroutine(IBringChicksHome());
+                way = routeBringChicksHome[0].position;
+                MirrorAnimation();
+                //StartCoroutine(GoSomeWhere(BringChicksHome()));
             }
         }
     }
@@ -93,10 +105,10 @@ public class DenisBehaviour : MonoBehaviour
         else
             return "side_walk";
     }
-    IEnumerator IGoToBarn()
+    IEnumerator GoSomeWhere(bool func)
     {
         inProgress = true;
-        yield return new WaitUntil(() => GoToBarn());
+        yield return new WaitUntil(() => func);
         inProgress = false;
     }
     bool GoToBarn()
@@ -108,19 +120,12 @@ public class DenisBehaviour : MonoBehaviour
             ++currentDestination;
             if (currentDestination >= routeToBarn.Count)
             {
-                currentDestination = 0;
                 return true;
             }
             way = routeToBarn[currentDestination].position;
             MirrorAnimation();
         }
         return false;
-    }
-    IEnumerator IGoFromBarn()
-    {
-        inProgress = true;
-        yield return new WaitUntil(() => GoFromBarn());
-        inProgress = false;
     }
     bool GoFromBarn()
     {
@@ -131,10 +136,35 @@ public class DenisBehaviour : MonoBehaviour
             ++currentDestination;
             if (currentDestination >= routeFromBarn.Count)
             {
-                currentDestination = 0;
                 return true;
             }
             way = routeFromBarn[currentDestination].position;
+            MirrorAnimation();
+        }
+        return false;
+    }
+    bool WaterGarden()
+    {
+        animator.Play(ChooseAnimation());
+        transform.position = Vector2.MoveTowards(transform.position, way, speed * Time.deltaTime);
+        if (Vector2.Distance(transform.position, way) < range)
+        {
+            // Denis reached the watering can
+            if (currentDestination >= 5)
+            {
+                // Now watering can will be in his hand
+                Vector3 DenisBottom = transform.position;
+                RectTransform canRectTransform = wateringCan.GetComponent<RectTransform>();
+                canRectTransform.position = DenisBottom;
+                canRectTransform.anchoredPosition += new Vector2(40, 100);
+            }
+
+            ++currentDestination;
+            if (currentDestination >= routeFromBarn.Count)
+            {
+                return true;
+            }
+            way = routeWaterGarden[currentDestination].position;
             MirrorAnimation();
         }
         return false;
