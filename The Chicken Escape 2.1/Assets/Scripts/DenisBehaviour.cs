@@ -6,12 +6,18 @@ using UnityEngine;
 public class DenisBehaviour : MonoBehaviour
 {
     private Animator animator;
+    private float animationSpeed = 0.26f;
     private int hours;
     private int minutes;
     public float speed = 3f;
     private float range = 0.1f;
     private bool inProgress = false;
     private bool isStanding = false;
+    private bool isWatering = false;
+    private float wateringTimer = 0;
+    private float wateringTime = 7f;
+    private float standingTimer = 0;
+    private float standingTime = 7f;
 
     public List<Transform> routePickEggs;
     public List<Transform> routeToBarn;
@@ -37,6 +43,13 @@ public class DenisBehaviour : MonoBehaviour
         if (!inProgress)
         {
             currentDestination = 0;
+            // test
+            if (hours == 11 && minutes == 0)
+            {
+                way = routeWaterGarden[0].position;
+                MirrorAnimation();
+                StartCoroutine(IWaterGarden());
+            }
             if (hours == 11 && minutes == 30)
             {
                 way = routePickEggs[0].position;
@@ -47,19 +60,19 @@ public class DenisBehaviour : MonoBehaviour
             {
                 way = routeToBarn[0].position;
                 MirrorAnimation();
-                StartCoroutine(GoSomeWhere(GoToBarn()));
+                StartCoroutine(IGoToBarn());
             }
             if (hours == 15 && minutes == 0)
             {
                 way = routeFromBarn[0].position;
                 MirrorAnimation();
-                StartCoroutine(GoSomeWhere(GoFromBarn()));
+                StartCoroutine(IGoFromBarn());
             }
             if (hours == 17 && minutes == 0)
             {
                 way = routeWaterGarden[0].position;
                 MirrorAnimation();
-                //StartCoroutine(GoSomeWhere(WaterGarden()));
+                StartCoroutine(IWaterGarden());
             }
             if (hours == 20 && minutes == 0)
             {
@@ -94,6 +107,7 @@ public class DenisBehaviour : MonoBehaviour
     }
     private string ChooseAnimation()
     {
+        animator.speed = 1;
         if (isStanding)
             return "back_stand";
         else if (Mathf.Abs(way.x - transform.position.x) < Mathf.Abs(way.y - transform.position.y) &&
@@ -105,10 +119,26 @@ public class DenisBehaviour : MonoBehaviour
         else
             return "side_walk";
     }
-    IEnumerator GoSomeWhere(bool func)
+    private string ChooseAnimationWithCan()
+    {
+        animator.speed = animationSpeed;
+        if (isStanding)
+            return "back_stand_can 2";
+        else if (isWatering)
+            return "watering 1";
+        else if (Mathf.Abs(way.x - transform.position.x) < Mathf.Abs(way.y - transform.position.y) &&
+            transform.position.y < way.y)
+            return "back_walk_can 1";
+        else if (Mathf.Abs(way.x - transform.position.x) < Mathf.Abs(way.y - transform.position.y) &&
+            transform.position.y >= way.y)
+            return "towards_walk_can 1";
+        else
+            return "side_walk_can 1";
+    }
+    IEnumerator IGoToBarn()
     {
         inProgress = true;
-        yield return new WaitUntil(() => func);
+        yield return new WaitUntil(() => GoToBarn());
         inProgress = false;
     }
     bool GoToBarn()
@@ -120,12 +150,19 @@ public class DenisBehaviour : MonoBehaviour
             ++currentDestination;
             if (currentDestination >= routeToBarn.Count)
             {
+                //currentDestination = 0;
                 return true;
             }
             way = routeToBarn[currentDestination].position;
             MirrorAnimation();
         }
         return false;
+    }
+    IEnumerator IGoFromBarn()
+    {
+        inProgress = true;
+        yield return new WaitUntil(() => GoFromBarn());
+        inProgress = false;
     }
     bool GoFromBarn()
     {
@@ -136,6 +173,7 @@ public class DenisBehaviour : MonoBehaviour
             ++currentDestination;
             if (currentDestination >= routeFromBarn.Count)
             {
+                //currentDestination = 0;
                 return true;
             }
             way = routeFromBarn[currentDestination].position;
@@ -143,29 +181,72 @@ public class DenisBehaviour : MonoBehaviour
         }
         return false;
     }
+    IEnumerator IWaterGarden()
+    {
+        inProgress = true;
+        yield return new WaitUntil(() => WaterGarden());
+        inProgress = false;
+    }
     bool WaterGarden()
     {
-        animator.Play(ChooseAnimation());
-        transform.position = Vector2.MoveTowards(transform.position, way, speed * Time.deltaTime);
-        if (Vector2.Distance(transform.position, way) < range)
-        {
-            // Denis reached the watering can
-            if (currentDestination >= 5)
-            {
-                // Now watering can will be in his hand
-                Vector3 DenisBottom = transform.position;
-                RectTransform canRectTransform = wateringCan.GetComponent<RectTransform>();
-                canRectTransform.position = DenisBottom;
-                canRectTransform.anchoredPosition += new Vector2(40, 100);
-            }
+        if (currentDestination < 6 || currentDestination > 28)
+            animator.Play(ChooseAnimation());
+        else
+            animator.Play(ChooseAnimationWithCan());
 
-            ++currentDestination;
-            if (currentDestination >= routeFromBarn.Count)
+        if (isWatering)
+        {
+            animator.speed = 0.16f;
+            wateringTimer += Time.deltaTime;
+            if (wateringTimer >= wateringTime)
             {
-                return true;
+                wateringTimer = 0;
+                isWatering = false;
             }
-            way = routeWaterGarden[currentDestination].position;
-            MirrorAnimation();
+        }
+        else if (isStanding)
+        {
+            standingTimer += Time.deltaTime;
+            if (standingTimer >= standingTime)
+            {
+                standingTimer = 0;
+                isStanding = false;
+            }
+        }
+        else
+        {
+            transform.position = Vector2.MoveTowards(transform.position, way, speed * Time.deltaTime);
+            if (Vector2.Distance(transform.position, way) < range)
+            {
+                // Denis reached the watering can
+                if (currentDestination == 5)
+                    wateringCan.SetActive(false);
+
+                // Time to get water from the pit
+                else if (currentDestination == 6)
+                {
+                    // Набрать воду в колодце
+                    isStanding = true;
+                }
+
+                // Watering starts
+                else if (currentDestination == 9 || currentDestination == 12 || currentDestination == 15 || 
+                    currentDestination == 18 || currentDestination == 21 || currentDestination == 24)
+                    isWatering = true;
+
+                // Time to place the watering can
+                else if (currentDestination == 28)
+                    wateringCan.SetActive(true);
+
+                ++currentDestination;
+                if (currentDestination >= routeWaterGarden.Count)
+                {
+                    //currentDestination = 0;
+                    return true;
+                }
+                way = routeWaterGarden[currentDestination].position;
+                MirrorAnimation();
+            }
         }
         return false;
     }
