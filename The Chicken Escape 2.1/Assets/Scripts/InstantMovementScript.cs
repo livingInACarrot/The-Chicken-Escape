@@ -5,6 +5,7 @@ public class InstantMovementScript : MonoBehaviour
     public float moveSpeed = 5f;
     private Vector2 input;
     private Animator animator;
+    private AudioManager audioManager;
     
     // Variable for smoothing the speed parameter
     private float currentSpeed;
@@ -22,6 +23,7 @@ public class InstantMovementScript : MonoBehaviour
 
     private void Start()
     {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
         animator = GetComponent<Animator>();
         animator.speed = animationSpeed;
         NPCmoveSpeed = moveSpeed / 3;
@@ -67,8 +69,6 @@ public class InstantMovementScript : MonoBehaviour
         float targetSpeed = moveVector.magnitude;
         currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, smoothTime / Time.deltaTime);
         animator.SetFloat("Speed", currentSpeed);
-
-        //Debug.Log("Current Speed: " + currentSpeed + ", Target Speed: " + targetSpeed);
     }
     private void NPCUpdate()
     {

@@ -8,6 +8,7 @@ TagManager:
   - Eat
   - Sleep
   - NPC
+  - Audio
   layers:
   - Default
   - TransparentFX

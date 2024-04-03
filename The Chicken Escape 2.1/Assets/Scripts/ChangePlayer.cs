@@ -8,9 +8,11 @@ public class ChangePlayer : MonoBehaviour
     public GameObject[] chickens; // Массив всех курочек
     private GameObject currentChicken; // Текущая курица
     public Button firstChickenButton;
+    private AudioManager audioManager;
 
     void Start()
     {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
         // Устанавливаем первую курицу как текущую
         currentChicken = chickens[0];
         currentChicken.tag = "Player";
@@ -24,6 +26,7 @@ public class ChangePlayer : MonoBehaviour
     }
     public void ChooseChicken(int chickenNumber)
     {
+        audioManager.PlaySound(audioManager.buttonClick);
         // Сначала сбрасываем тег текущей курицы на NPC
         currentChicken.tag = "NPC";
 
