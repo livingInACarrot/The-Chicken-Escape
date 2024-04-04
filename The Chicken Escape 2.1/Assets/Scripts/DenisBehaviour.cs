@@ -48,7 +48,6 @@ public class DenisBehaviour : MonoBehaviour
             {
                 way = routeWaterGarden[0].position;
                 MirrorAnimation();
-                StartCoroutine(IWaterGarden());
             }
             if (hours == 11 && minutes == 30)
             {
@@ -150,7 +149,6 @@ public class DenisBehaviour : MonoBehaviour
             ++currentDestination;
             if (currentDestination >= routeToBarn.Count)
             {
-                //currentDestination = 0;
                 return true;
             }
             way = routeToBarn[currentDestination].position;
@@ -173,7 +171,6 @@ public class DenisBehaviour : MonoBehaviour
             ++currentDestination;
             if (currentDestination >= routeFromBarn.Count)
             {
-                //currentDestination = 0;
                 return true;
             }
             way = routeFromBarn[currentDestination].position;
@@ -241,7 +238,6 @@ public class DenisBehaviour : MonoBehaviour
                 ++currentDestination;
                 if (currentDestination >= routeWaterGarden.Count)
                 {
-                    //currentDestination = 0;
                     return true;
                 }
                 way = routeWaterGarden[currentDestination].position;

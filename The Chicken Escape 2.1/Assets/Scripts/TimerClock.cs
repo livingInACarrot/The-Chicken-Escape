@@ -6,12 +6,13 @@ public class TimerClock : MonoBehaviour
     public TMP_Text timeText;
     public TMP_Text dayText;
     private int day = 1;
-    public static float dayLength = 14f; // Сколько реальных минут длится игровой день
+    public static float dayLength = 5f; // Сколько реальных минут длится игровой день
     public static float currentTime;
 
     void Start()
     {     
         currentTime = 11f * 60;   // Start at 11:00 in minutes
+        currentTime = 18f * 60;
         UpdateTimeText();
         UpdateDayText();
     }
