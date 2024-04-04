@@ -75,8 +75,8 @@ public class DenisBehaviour : MonoBehaviour
             }
             if (hours == 20 && minutes == 0)
             {
-                way = routeBringChicksHome[0].position;
-                MirrorAnimation();
+                //way = routeBringChicksHome[0].position;
+                //MirrorAnimation();
                 //StartCoroutine(GoSomeWhere(BringChicksHome()));
             }
         }

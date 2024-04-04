@@ -2,11 +2,12 @@ using UnityEngine;
 using System.Collections;
 public class InstantMovementScript : MonoBehaviour
 {
-    public float moveSpeed = 5f;
+    public float moveSpeed = 4f;
     private Vector2 input;
     private Animator animator;
     private AudioManager audioManager;
     private Rigidbody2D rb;
+    ChickenInteractions chick;
 
     // Variable for smoothing the speed parameter
     private float currentSpeed;
@@ -14,7 +15,7 @@ public class InstantMovementScript : MonoBehaviour
     public float animationSpeed = 1f;
 
     // NPC variables
-    private float maxDist = 6;
+    //private float maxDist = 6;
     private Vector2 way;
     private float range = 1;
     private float pauseDuration = 4;
@@ -24,6 +25,7 @@ public class InstantMovementScript : MonoBehaviour
 
     private void Start()
     {
+        chick = GetComponent<ChickenInteractions>();
         rb = GetComponent<Rigidbody2D>();
         audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
         animator = GetComponent<Animator>();
@@ -40,6 +42,8 @@ public class InstantMovementScript : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (chick.isSleeping)
+            return;
         if (CompareTag("Player"))
             PlayerUpdate();
         else if (CompareTag("NPC"))
@@ -47,6 +51,7 @@ public class InstantMovementScript : MonoBehaviour
     }
     private void PlayerUpdate()
     {
+        
         input.x = Input.GetAxisRaw("Horizontal");
         input.y = Input.GetAxisRaw("Vertical");
 
@@ -136,14 +141,4 @@ public class InstantMovementScript : MonoBehaviour
             transform.localScale = new Vector3(1, 1, 1);
         }
     }
-
-    /*
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        if (!collision.gameObject.CompareTag("Player") && !collision.gameObject.CompareTag("NPC") && CompareTag("NPC") && isMoving)
-        {
-            NewDestination(way);
-        }
-    }
-    */
 }

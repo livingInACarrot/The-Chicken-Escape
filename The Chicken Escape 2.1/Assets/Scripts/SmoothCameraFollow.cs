@@ -4,7 +4,7 @@ using UnityEngine;
 public class SmoothCameraFollow : MonoBehaviour
 {
     public Transform targetInit;
-    public static Transform target; // Set this to your chicken in the Inspector
+    public static Transform target;
     public float smoothSpeed = 0.125f;
     public float zoomSpeed = 4f;
     public float minZoom = 5f;

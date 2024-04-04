@@ -7,19 +7,22 @@ public class ChickenInteractions : MonoBehaviour
 {
     private Animator chickenAnimator;
     public Button button;
+    public Button button2;
 
     public bool isEating = false;
     public bool isDrinking = false;
     public bool isSleeping = false;
+    public bool isLayingEgg = false;
 
     void Start()
     {
         chickenAnimator = GetComponent<Animator>();
         button.gameObject.SetActive(false);
+        button2.gameObject.SetActive(false);
     }
     private void OnTriggerStay2D(Collider2D other)
     {
-        if (!this.CompareTag("Player"))
+        if (CompareTag("NPC"))
         {
             return;
         }
@@ -52,14 +55,29 @@ public class ChickenInteractions : MonoBehaviour
             }
             else if (other.CompareTag("Sleep"))
             {
+                RectTransform button2RectTransform = button2.GetComponent<RectTransform>();
+                button2RectTransform.position = otherCenter;
+                button2RectTransform.anchoredPosition += new Vector2(0, 410);
+                Transform chickenRectTransform = GetComponent<Transform>();
+
                 button.gameObject.SetActive(true);
+                button2.gameObject.SetActive(true);
                 button.GetComponentInChildren<TMP_Text>().text = "sleep";
-                Vector2 colliderPosition = other.transform.position;
+                button2.GetComponentInChildren<TMP_Text>().text = "lay egg";
+
+                //sleep
                 button.onClick.AddListener(delegate () {
-                    //transform.position = colliderPosition;
+                    Vector3 targetCenter = otherCenter + new Vector3(0, -0.12f, 0);
+                    chickenRectTransform.position = targetCenter;
                     button.GetComponentInChildren<TMP_Text>().text = "stop";
-                    //chickenAnimator.SetBool("isSleeping", true);
                     StartCoroutine(PlaySleepAnimation());
+                });
+                //lay egg
+                button2.onClick.AddListener(delegate () {
+                    Vector3 targetCenter = otherCenter + new Vector3(0, -0.12f, 0);
+                    chickenRectTransform.position = targetCenter;
+                    button2.gameObject.SetActive(false);
+                    StartCoroutine(LayEgg());
                 });
             }
         }
@@ -68,6 +86,7 @@ public class ChickenInteractions : MonoBehaviour
     private void OnTriggerExit2D(Collider2D other)
     {
         button.gameObject.SetActive(false);
+        button2.gameObject.SetActive(false);
         Stop();
     }
     private void Stop()
@@ -97,6 +116,13 @@ public class ChickenInteractions : MonoBehaviour
     {
         isSleeping = true;
         chickenAnimator.Play("chicken_sleep");
+        button.onClick.AddListener(() => Stop());
+        yield return new WaitForSeconds(30);
+    }
+    IEnumerator LayEgg()
+    {
+        isLayingEgg = true;
+        chickenAnimator.Play("chicken_lay_egg");
         button.onClick.AddListener(() => Stop());
         yield return new WaitForSeconds(30);
     }
