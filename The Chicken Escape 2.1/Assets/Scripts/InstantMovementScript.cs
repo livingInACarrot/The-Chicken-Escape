@@ -6,7 +6,8 @@ public class InstantMovementScript : MonoBehaviour
     private Vector2 input;
     private Animator animator;
     private AudioManager audioManager;
-    
+    private Rigidbody2D rb;
+
     // Variable for smoothing the speed parameter
     private float currentSpeed;
     public float smoothTime = 0.1f;
@@ -23,6 +24,7 @@ public class InstantMovementScript : MonoBehaviour
 
     private void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
         audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
         animator = GetComponent<Animator>();
         animator.speed = animationSpeed;
@@ -36,7 +38,7 @@ public class InstantMovementScript : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (CompareTag("Player"))
             PlayerUpdate();
@@ -48,8 +50,11 @@ public class InstantMovementScript : MonoBehaviour
         input.x = Input.GetAxisRaw("Horizontal");
         input.y = Input.GetAxisRaw("Vertical");
 
-        Vector2 moveVector = input.normalized * moveSpeed * Time.deltaTime;
-        transform.position += new Vector3(moveVector.x, moveVector.y, 0);
+        // Create a movement vector based on the input and the move speed
+        Vector2 moveVector = new Vector2(input.x, input.y) * moveSpeed;
+
+        // Apply the movement to the Rigidbody2D component
+        rb.velocity = moveVector;
 
         // Mirror the sprite when moving left
         if (input.x < 0)
@@ -60,14 +65,11 @@ public class InstantMovementScript : MonoBehaviour
         {
             transform.localScale = new Vector3(1, 1, 1);
         }
-        if (animator.speed != animationSpeed)
-        {
-            animator.speed = animationSpeed;
-        }
 
+        // No need to use Time.fixedDeltaTime here as we're setting velocity, not manually moving the transform
         // Smoothly transition the speed parameter
-        float targetSpeed = moveVector.magnitude;
-        currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, smoothTime / Time.deltaTime);
+        float targetSpeed = rb.velocity.magnitude;
+        currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, smoothTime / Time.fixedDeltaTime);
         animator.SetFloat("Speed", currentSpeed);
     }
     private void NPCUpdate()
@@ -79,17 +81,10 @@ public class InstantMovementScript : MonoBehaviour
 
         if (isMoving)
         {
-            // Counting current move speed
-            /*
-            Vector2 direction = way - (Vector2)transform.position;
-            direction.Normalize();
-            float currentMoveSpeed = direction.magnitude * NPCmoveSpeed;
-            if (currentMoveSpeed + range < NPCmoveSpeed)
-                NewDestination();
-            */
+            // Move the NPC towards the destination using Rigidbody2D.MovePosition for smooth movement
             if (Vector2.Distance(transform.position, way) > range)
             {
-                transform.position = Vector2.MoveTowards(transform.position, way, NPCmoveSpeed * Time.deltaTime);
+                rb.MovePosition(Vector2.MoveTowards(rb.position, way, NPCmoveSpeed * Time.fixedDeltaTime));
             }
             else
             {
@@ -97,23 +92,28 @@ public class InstantMovementScript : MonoBehaviour
                 isMoving = false;
             }
         }
-        if (!isMoving)
+        else
         {
-            timer += Time.deltaTime;
+            timer += Time.fixedDeltaTime;
             if (timer >= pauseDuration)
             {
+                NewDestination();
                 animator.SetFloat("Speed", 1);
                 isMoving = true;
                 timer = 0;
-                NewDestination();
             }
         }
-
     }
+
     private void NewDestination()
     {
-        way = new Vector2(Random.Range(transform.position.x - maxDist, transform.position.x + maxDist),
-            Random.Range(transform.position.y - maxDist, transform.position.y + maxDist));
+        float minX = 17;
+        float maxX = 36;
+        float minY = -8;
+        float maxY = 3;
+
+        way = new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
+
         if (way.x < transform.position.x)
         {
             transform.localScale = new Vector3(-1, 1, 1);
@@ -123,6 +123,7 @@ public class InstantMovementScript : MonoBehaviour
             transform.localScale = new Vector3(1, 1, 1);
         }
     }
+
     private void NewDestination(Vector2 oldway)
     {
         way = new Vector2(transform.position.x - oldway.x, transform.position.y - oldway.y);

@@ -19,7 +19,11 @@ public class ChickenInteractions : MonoBehaviour
     }
     private void OnTriggerStay2D(Collider2D other)
     {
-        // Ставим кнопку над объектом
+        if (!this.CompareTag("Player"))
+        {
+            return;
+        }
+
         Vector3 otherCenter = other.bounds.center;
         RectTransform buttonRectTransform = button.GetComponent<RectTransform>();
         buttonRectTransform.position = otherCenter;
