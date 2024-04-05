@@ -20,9 +20,10 @@ public class ChickenInteractions : MonoBehaviour
         button.gameObject.SetActive(false);
         button2.gameObject.SetActive(false);
     }
+
     private void OnTriggerStay2D(Collider2D other)
     {
-        if (CompareTag("NPC"))
+        if (!CompareTag("Player"))
         {
             return;
         }
@@ -38,9 +39,10 @@ public class ChickenInteractions : MonoBehaviour
             {
                 button.gameObject.SetActive(true);
                 button.GetComponentInChildren<TMP_Text>().text = "eat";
-                button.onClick.AddListener(delegate() {
+                button.onClick.RemoveAllListeners(); // Clear existing listeners
+                button.onClick.AddListener(delegate () {
                     button.GetComponentInChildren<TMP_Text>().text = "stop";
-                    StartCoroutine(PlayEatAnimation()); 
+                    StartCoroutine(PlayEatAnimation());
                 });
 
             }
@@ -48,6 +50,7 @@ public class ChickenInteractions : MonoBehaviour
             {
                 button.gameObject.SetActive(true);
                 button.GetComponentInChildren<TMP_Text>().text = "drink";
+                button.onClick.RemoveAllListeners(); // Clear existing listeners
                 button.onClick.AddListener(delegate () {
                     button.GetComponentInChildren<TMP_Text>().text = "stop";
                     StartCoroutine(PlayDrinkAnimation());
@@ -64,6 +67,9 @@ public class ChickenInteractions : MonoBehaviour
                 button2.gameObject.SetActive(true);
                 button.GetComponentInChildren<TMP_Text>().text = "sleep";
                 button2.GetComponentInChildren<TMP_Text>().text = "lay egg";
+
+                button.onClick.RemoveAllListeners(); // Clear existing listeners for sleep
+                button2.onClick.RemoveAllListeners(); // Clear existing listeners for lay egg
 
                 //sleep
                 button.onClick.AddListener(delegate () {
@@ -82,6 +88,7 @@ public class ChickenInteractions : MonoBehaviour
             }
         }
     }
+
 
     private void OnTriggerExit2D(Collider2D other)
     {

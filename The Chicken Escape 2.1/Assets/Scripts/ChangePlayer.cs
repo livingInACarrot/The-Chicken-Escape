@@ -5,34 +5,48 @@ using UnityEngine.UI;
 
 public class ChangePlayer : MonoBehaviour
 {
-    public GameObject[] chickens; // Массив всех курочек
-    private GameObject currentChicken; // Текущая курица
+    public GameObject[] chickens;
+    private GameObject currentChicken;
     public Button firstChickenButton;
     private AudioManager audioManager;
 
     void Start()
     {
         audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
-        // Устанавливаем первую курицу как текущую
         currentChicken = chickens[0];
         currentChicken.tag = "Player";
+        currentChicken.GetComponent<Rigidbody2D>().mass = 1;
 
-        UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(firstChickenButton.gameObject);
-        // Устанавливаем все остальные курочки как NPC
         for (int i = 1; i < chickens.Length; i++)
         {
             chickens[i].tag = "NPC";
+            chickens[i].GetComponent<Rigidbody2D>().mass = 10;
         }
+
+        UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(firstChickenButton.gameObject);
     }
+
     public void ChooseChicken(int chickenNumber)
     {
         audioManager.PlaySound(audioManager.buttonClick);
-        // Сначала сбрасываем тег текущей курицы на NPC
-        currentChicken.tag = "NPC";
 
-        // Затем устанавливаем тег новой курицы на Player
+        currentChicken.tag = "NPC";
+        currentChicken.GetComponent<Rigidbody2D>().mass = 10;
+
         currentChicken = chickens[chickenNumber];
         currentChicken.tag = "Player";
+        currentChicken.GetComponent<Rigidbody2D>().mass = 1;
+
+        // Set the camera to follow the new player chicken
         SmoothCameraFollow.target = currentChicken.GetComponent<Transform>();
+
+        foreach (var chicken in chickens)
+        {
+            if (chicken != currentChicken)
+            {
+                chicken.tag = "NPC";
+                chicken.GetComponent<Rigidbody2D>().mass = 10;
+            }
+        }
     }
 }

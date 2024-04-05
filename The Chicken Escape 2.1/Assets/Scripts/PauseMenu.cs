@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 public class PauseMenu : MonoBehaviour
 {
     public GameObject pauseMenuCanvas;
+    public GameObject hideOnPausePanel; // Reference to the HideOnPause panel
 
     void Update()
     {
@@ -32,6 +33,10 @@ public class PauseMenu : MonoBehaviour
     {
         pauseMenuCanvas.SetActive(false);
         Time.timeScale = 1f;
+        if (hideOnPausePanel != null)
+        {
+            hideOnPausePanel.SetActive(true); // Re-enable the HideOnPause panel when resuming
+        }
     }
 
     public void LoadMainMenu()
@@ -43,6 +48,9 @@ public class PauseMenu : MonoBehaviour
     private void PauseGame()
     {
         Time.timeScale = 0f;
+        if (hideOnPausePanel != null)
+        {
+            hideOnPausePanel.SetActive(false); // Disable the HideOnPause panel when pausing
+        }
     }
 }
-

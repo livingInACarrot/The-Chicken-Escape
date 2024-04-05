@@ -51,17 +51,12 @@ public class InstantMovementScript : MonoBehaviour
     }
     private void PlayerUpdate()
     {
-        
         input.x = Input.GetAxisRaw("Horizontal");
         input.y = Input.GetAxisRaw("Vertical");
 
-        // Create a movement vector based on the input and the move speed
-        Vector2 moveVector = new Vector2(input.x, input.y) * moveSpeed;
-
-        // Apply the movement to the Rigidbody2D component
+        Vector2 moveVector = new Vector2(input.x, input.y).normalized * moveSpeed;
         rb.velocity = moveVector;
 
-        // Mirror the sprite when moving left
         if (input.x < 0)
         {
             transform.localScale = new Vector3(-1, 1, 1);
@@ -71,9 +66,7 @@ public class InstantMovementScript : MonoBehaviour
             transform.localScale = new Vector3(1, 1, 1);
         }
 
-        // No need to use Time.fixedDeltaTime here as we're setting velocity, not manually moving the transform
-        // Smoothly transition the speed parameter
-        float targetSpeed = rb.velocity.magnitude;
+        float targetSpeed = moveVector.magnitude;
         currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, smoothTime / Time.fixedDeltaTime);
         animator.SetFloat("Speed", currentSpeed);
     }
