@@ -11,7 +11,6 @@ public class MenuManager : MonoBehaviour
     public Slider musicVolumeSlider;
     public Slider effectsVolumeSlider;
     public Slider masterVolumeSlider;
-    public AudioMixer audioMixer;
     public AudioManager audioManager;
 
     private void Start()
@@ -53,17 +52,17 @@ public class MenuManager : MonoBehaviour
 
     public void SetMusicVolume(float volume)
     {
-        //audioMixer.SetFloat("MusicVolume", volume);
+        audioManager.SetMusicVolume(volume);
     }
 
     public void SetEffectsVolume(float volume)
     {
-        //audioMixer.SetFloat("EffectsVolume", volume);
+        audioManager.SetSoundsVolume(volume);
     }
 
     public void SetMasterVolume(float volume)
     {
-        //audioMixer.SetFloat("MasterVolume", volume); // Ensure "MasterVolume" matches the exposed parameter
+        AudioListener.volume = volume;
     }
 
     public void ExitGame()

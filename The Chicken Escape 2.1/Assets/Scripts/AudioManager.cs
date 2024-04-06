@@ -1,12 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class AudioManager : MonoBehaviour
 {
-    [SerializeField] AudioSource musicSource;
-    [SerializeField] AudioSource birdsSource;
-    [SerializeField] AudioSource soundsSource;
+    [SerializeField] private Slider masterVolumeSlider; // Slider for master volume
+    [SerializeField] private Slider musicVolumeSlider;  // Slider for music volume
+    [SerializeField] private Slider soundsVolumeSlider; // Slider for sounds volume
+
+    [SerializeField] private AudioSource musicSource;    // Assign your music audio source here
+    [SerializeField] private AudioSource birdsSource;    // Assign your birds audio source here
+    [SerializeField] private AudioSource soundsSource;   // Assign your general sounds audio source here
+
+    private const string MasterVolumeKey = "masterVolume";
+    private const string MusicVolumeKey = "musicVolume";
+    private const string SoundsVolumeKey = "soundsVolume";
 
     public AudioClip mainMenuMusic;
     public AudioClip backgroundMusic;
@@ -25,17 +35,45 @@ public class AudioManager : MonoBehaviour
 
     private float musicVolume;
 
-    private void Start()
+    void Start()
     {
-        musicVolume = musicSource.volume;
-        //DontDestroyOnLoad(gameObject);
-        musicSource.clip = backgroundMusic;
-        musicSource.Play();
-        birdsSource.clip = birdsSing;
-        birdsSource.Play();
+        Debug.Log("LOL");
+        Debug.Log(musicSource.volume);
+        LoadAndApplyVolumeSettings();
+
+        // Play the background music and birds singing at the start of the scene
+        PlayMusic(backgroundMusic);
+        PlayBirds(birdsSing);
     }
+
+    private void Awake()
+    {
+        LoadAndApplyVolumeSettings();
+        SceneManager.sceneLoaded += OnSceneLoaded; // Subscribe to the sceneLoaded event
+        //DontDestroyOnLoad(gameObject); // Make this object persistent across scenes
+    }
+
+    private void LoadAndApplyVolumeSettings()
+    {
+        // Load volume settings from PlayerPrefs
+        float musicVolume = PlayerPrefs.GetFloat(MusicVolumeKey, 0.75f);
+        float soundsVolume = PlayerPrefs.GetFloat(SoundsVolumeKey, 0.75f);
+        float masterVolume = PlayerPrefs.GetFloat(MasterVolumeKey, 1f);
+
+        // Apply volume settings to AudioSources and AudioListener
+        musicSource.volume = musicVolume;
+        soundsSource.volume = soundsVolume;
+        AudioListener.volume = masterVolume;
+
+        // Log the loaded values for debugging purposes
+        Debug.Log($"Loaded volumes: Master={masterVolume}, Music={musicVolume}, Sounds={soundsVolume}");
+    }
+
+
+
     private void Update()
     {
+
         SwitchTime();
     }
     void SwitchTime()
@@ -77,6 +115,25 @@ public class AudioManager : MonoBehaviour
             yield return null;
         }
     }
+    public void SetMusicVolume(float volume)
+    {
+        musicSource.volume = volume;
+        PlayerPrefs.SetFloat("MusicVolume", volume); // Save volume
+    }
+
+    // Call this method from your birds volume slider
+    public void SetBirdsVolume(float volume)
+    {
+        birdsSource.volume = volume;
+        PlayerPrefs.SetFloat("BirdsVolume", volume); // Save volume
+    }
+
+    // Call this method from your sounds volume slider
+    public void SetSoundsVolume(float volume)
+    {
+        soundsSource.volume = volume;
+        PlayerPrefs.SetFloat("SoundsVolume", volume); // Save volume
+    }
     public void PlaySound(AudioClip sound)
     {
         soundsSource.PlayOneShot(sound);
@@ -98,5 +155,57 @@ public class AudioManager : MonoBehaviour
         musicSource.Stop();
         soundsSource.Stop();
         birdsSource.Stop();
+    }
+
+    void OnDestroy()
+    {
+        // Unsubscribe to prevent memory leaks
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        LoadAndApplyVolumeSettings(); // Reapply volume settings every time a scene is loaded
+    }
+
+    public void ChangeMasterVolume()
+    {
+        AudioListener.volume = masterVolumeSlider.value;
+        SaveVolumeSetting(MasterVolumeKey, masterVolumeSlider.value);
+    }
+
+    public void ChangeMusicVolume()
+    {
+        musicSource.volume = musicVolumeSlider.value;
+        SaveVolumeSetting(MusicVolumeKey, musicVolumeSlider.value);
+    }
+
+    public void ChangeSoundsVolume()
+    {
+        // Assuming you want the same volume for birds and general sounds
+        birdsSource.volume = soundsVolumeSlider.value;
+        soundsSource.volume = soundsVolumeSlider.value;
+        SaveVolumeSetting(SoundsVolumeKey, soundsVolumeSlider.value);
+    }
+
+    private void LoadVolumeSetting(string key, Slider slider, float defaultValue)
+    {
+        if (!PlayerPrefs.HasKey(key))
+        {
+            PlayerPrefs.SetFloat(key, defaultValue);
+        }
+        slider.value = PlayerPrefs.GetFloat(key);
+    }
+
+    private void SaveVolumeSetting(string key, float value)
+    {
+        PlayerPrefs.SetFloat(key, value);
+    }
+    private void ApplyVolumeSettings()
+    {
+        // Update the AudioListener and AudioSources with the saved values
+        ChangeMasterVolume();
+        ChangeMusicVolume();
+        ChangeSoundsVolume();
     }
 }
