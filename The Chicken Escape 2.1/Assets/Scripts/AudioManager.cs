@@ -37,11 +37,7 @@ public class AudioManager : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("LOL");
-        Debug.Log(musicSource.volume);
         LoadAndApplyVolumeSettings();
-
-        // Play the background music and birds singing at the start of the scene
         PlayMusic(backgroundMusic);
         PlayBirds(birdsSing);
     }

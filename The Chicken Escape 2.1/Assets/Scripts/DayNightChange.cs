@@ -12,7 +12,6 @@ public enum DayCycles
 public class DayNightChange : MonoBehaviour
 {
     private Light2D globalLight;
-    public Light2D windowLight;
 
     private DayCycles dayCycle;
     private float cycleCurrentTime = 0;
@@ -30,7 +29,6 @@ public class DayNightChange : MonoBehaviour
     void Start()
     {
         globalLight = GetComponent<Light2D>();
-        windowLight.enabled = false;
     }
 
     void Update()
@@ -39,7 +37,7 @@ public class DayNightChange : MonoBehaviour
 
         if (TimerClock.Hours() == nigh_limit || TimerClock.Hours() == sunr_limit || 
             TimerClock.Hours() == day_limit || TimerClock.Hours() == suns_limit)
-            cycleCurrentTime += Time.deltaTime;
+            cycleCurrentTime += Time.deltaTime * TimeSpeedup.speedup;
         else
             cycleCurrentTime = 0;
         
@@ -53,11 +51,6 @@ public class DayNightChange : MonoBehaviour
             globalLight.color = Color.Lerp(sunset, night, percent);
         else if (dayCycle == DayCycles.Night)
             globalLight.color = Color.Lerp(night, sunrise, percent);
-
-        if (TimerClock.Hours() == 20)
-            windowLight.enabled = true;
-        else if (TimerClock.Hours() == 1)
-            windowLight.enabled = false;
     }
     DayCycles WhatCycleIsIt()
     {

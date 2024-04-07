@@ -20,7 +20,6 @@ public class ChickenInteractions : MonoBehaviour
         button.gameObject.SetActive(false);
         button2.gameObject.SetActive(false);
     }
-
     private void OnTriggerStay2D(Collider2D other)
     {
         if (!CompareTag("Player"))

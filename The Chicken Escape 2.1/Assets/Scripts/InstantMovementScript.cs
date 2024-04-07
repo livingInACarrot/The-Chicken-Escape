@@ -2,7 +2,8 @@ using UnityEngine;
 using System.Collections;
 public class InstantMovementScript : MonoBehaviour
 {
-    public float moveSpeed = 4f;
+    public float moveSpeedInit = 7f;
+    private float moveSpeed;
     private Vector2 input;
     private Animator animator;
     private AudioManager audioManager;
@@ -19,6 +20,7 @@ public class InstantMovementScript : MonoBehaviour
     private Vector2 way;
     private float range = 1;
     private float pauseDuration = 4;
+    private float NPCmoveSpeedInit;
     private float NPCmoveSpeed;
     private float timer = 0;
     private bool isMoving;
@@ -30,8 +32,8 @@ public class InstantMovementScript : MonoBehaviour
         audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
         animator = GetComponent<Animator>();
         animator.speed = animationSpeed;
-        NPCmoveSpeed = moveSpeed / 3;
-
+        NPCmoveSpeedInit = moveSpeedInit / 3;
+        moveSpeed = moveSpeedInit;
         if (CompareTag("NPC"))
         {
             NewDestination();
@@ -42,6 +44,9 @@ public class InstantMovementScript : MonoBehaviour
 
     private void FixedUpdate()
     {
+        NPCmoveSpeed = NPCmoveSpeedInit * TimeSpeedup.speedup;
+        moveSpeed = moveSpeedInit * TimeSpeedup.speedup;
+        animator.speed = animationSpeed * TimeSpeedup.speedup;
         if (chick.isSleeping)
             return;
         if (CompareTag("Player"))
@@ -72,11 +77,6 @@ public class InstantMovementScript : MonoBehaviour
     }
     private void NPCUpdate()
     {
-        if (animator.speed != animationSpeed)
-        {
-            animator.speed = animationSpeed;
-        }
-
         if (isMoving)
         {
             // Move the NPC towards the destination using Rigidbody2D.MovePosition for smooth movement

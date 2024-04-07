@@ -9,7 +9,8 @@ public class DenisBehaviour : MonoBehaviour
     private float animationSpeed = 0.26f;
     private int hours;
     private int minutes;
-    public float speed = 3f;
+    public float speedInit = 3f;
+    private float speed;
     private float range = 0.1f;
     private bool inProgress = false;
     private bool isStanding = false;
@@ -39,6 +40,8 @@ public class DenisBehaviour : MonoBehaviour
     {
         hours = TimerClock.Hours();
         minutes = TimerClock.Minutes();
+
+        speed = speedInit * TimeSpeedup.speedup;
 
         if (!inProgress)
         {
@@ -106,7 +109,7 @@ public class DenisBehaviour : MonoBehaviour
     }
     private string ChooseAnimation()
     {
-        animator.speed = 1;
+        animator.speed = 1 * TimeSpeedup.speedup;
         if (isStanding)
             return "back_stand";
         else if (Mathf.Abs(way.x - transform.position.x) < Mathf.Abs(way.y - transform.position.y) &&
@@ -120,7 +123,7 @@ public class DenisBehaviour : MonoBehaviour
     }
     private string ChooseAnimationWithCan()
     {
-        animator.speed = animationSpeed;
+        animator.speed = animationSpeed * TimeSpeedup.speedup;
         if (isStanding)
             return "back_stand_can 2";
         else if (isWatering)
