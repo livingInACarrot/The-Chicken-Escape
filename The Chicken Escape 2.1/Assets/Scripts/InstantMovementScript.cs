@@ -8,7 +8,7 @@ public class InstantMovementScript : MonoBehaviour
     private Animator animator;
     private AudioManager audioManager;
     private Rigidbody2D rb;
-    ChickenInteractions chick;
+    private ChickenInteractions chick;
 
     // Variable for smoothing the speed parameter
     private float currentSpeed;
@@ -47,7 +47,7 @@ public class InstantMovementScript : MonoBehaviour
         NPCmoveSpeed = NPCmoveSpeedInit * TimeSpeedup.speedup;
         moveSpeed = moveSpeedInit * TimeSpeedup.speedup;
         animator.speed = animationSpeed * TimeSpeedup.speedup;
-        if (chick.isSleeping)
+        if (chick.isSleeping || chick.isLayingEgg)
             return;
         if (CompareTag("Player"))
             PlayerUpdate();

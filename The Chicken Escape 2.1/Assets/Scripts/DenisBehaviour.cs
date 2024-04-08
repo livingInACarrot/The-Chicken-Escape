@@ -30,6 +30,7 @@ public class DenisBehaviour : MonoBehaviour
     private Vector2 way;
 
     public GameObject wateringCan;
+    public Pit pit;
 
     void Start()
     {
@@ -211,6 +212,7 @@ public class DenisBehaviour : MonoBehaviour
             {
                 standingTimer = 0;
                 isStanding = false;
+                pit.Animate();
             }
         }
         else
@@ -227,6 +229,7 @@ public class DenisBehaviour : MonoBehaviour
                 {
                     // Набрать воду в колодце
                     isStanding = true;
+                    pit.Animate();
                 }
 
                 // Watering starts
