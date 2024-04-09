@@ -32,7 +32,6 @@ public class ChickenInteractions : MonoBehaviour
             return;
         if (isEating || isDrinking || isSleeping || isLayingEgg)
             return;
-
         Vector3 otherCenter = other.bounds.center;
         RectTransform buttonRectTransform = button.GetComponent<RectTransform>();
         buttonRectTransform.position = otherCenter;
