@@ -15,6 +15,9 @@ public class Hammock : MonoBehaviour
     private bool isCarrying = false;
     private bool isOnGround = false;
     private bool isOneSide = false;
+
+    public bool isOnEscapeZone = false;
+
     private void Start()
     {
         hammock = GetComponent<SpriteRenderer>();
@@ -42,13 +45,10 @@ public class Hammock : MonoBehaviour
 
         isCarrying = !isCarrying;
         if (isCarrying)
-        {
             hammock.sprite = ball;// onChick;
-        }
         else
-        {
             hammock.sprite = ball;
-        }
+        CheckZone();
     }
     public void LeftClick()
     {
@@ -87,5 +87,12 @@ public class Hammock : MonoBehaviour
             Collider2D collider = GetComponent<Collider2D>();
             collider.offset = Vector2.zero;
         }
+    }
+    void CheckZone()
+    {
+        if (isCarrying)
+            return;
+        EscapeZone zone = FindObjectOfType<EscapeZone>();
+        isOnEscapeZone = zone.IsOnZone(transform.position);
     }
 }

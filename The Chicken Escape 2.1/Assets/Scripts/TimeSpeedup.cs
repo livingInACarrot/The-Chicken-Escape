@@ -3,16 +3,13 @@ using UnityEngine.EventSystems;
 
 public class TimeSpeedup : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
-    public static float speedup = 1f;
-    private float speedupValue = 3f;  // x3
-
     public void OnPointerDown(PointerEventData eventData)
     {
-        speedup = speedupValue;
+        Time.timeScale = 5f;
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        speedup = 1;
+        Time.timeScale = 1f;
     }
 }

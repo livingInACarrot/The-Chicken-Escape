@@ -9,8 +9,7 @@ public class DenisBehaviour : MonoBehaviour
     private float animationSpeed = 0.26f;
     private int hours;
     private int minutes;
-    public float speedInit = 3f;
-    private float speed;
+    public float speed = 3f;
     private float range = 0.1f;
     private bool inProgress = false;
     private bool isStanding = false;
@@ -42,17 +41,9 @@ public class DenisBehaviour : MonoBehaviour
         hours = TimerClock.Hours();
         minutes = TimerClock.Minutes();
 
-        speed = speedInit * TimeSpeedup.speedup;
-
         if (!inProgress)
         {
             currentDestination = 0;
-            // test
-            if (hours == 11 && minutes == 0)
-            {
-                way = routeWaterGarden[0].position;
-                MirrorAnimation();
-            }
             if (hours == 11 && minutes == 30)
             {
                 way = routePickEggs[0].position;
@@ -110,7 +101,7 @@ public class DenisBehaviour : MonoBehaviour
     }
     private string ChooseAnimation()
     {
-        animator.speed = 1 * TimeSpeedup.speedup;
+        animator.speed = 1;
         if (isStanding)
             return "back_stand";
         else if (Mathf.Abs(way.x - transform.position.x) < Mathf.Abs(way.y - transform.position.y) &&
@@ -124,7 +115,7 @@ public class DenisBehaviour : MonoBehaviour
     }
     private string ChooseAnimationWithCan()
     {
-        animator.speed = animationSpeed * TimeSpeedup.speedup;
+        animator.speed = animationSpeed;
         if (isStanding)
             return "back_stand_can 2";
         else if (isWatering)

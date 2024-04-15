@@ -37,7 +37,7 @@ public class DayNightChange : MonoBehaviour
 
         if (TimerClock.Hours() == nigh_limit || TimerClock.Hours() == sunr_limit || 
             TimerClock.Hours() == day_limit || TimerClock.Hours() == suns_limit)
-            cycleCurrentTime += Time.deltaTime * TimeSpeedup.speedup;
+            cycleCurrentTime += Time.deltaTime;
         else
             cycleCurrentTime = 0;
         

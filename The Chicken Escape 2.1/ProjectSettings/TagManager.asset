@@ -9,6 +9,7 @@ TagManager:
   - Sleep
   - NPC
   - Audio
+  - EscapeZone
   layers:
   - Default
   - TransparentFX

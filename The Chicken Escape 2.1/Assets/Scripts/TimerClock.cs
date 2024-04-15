@@ -20,7 +20,7 @@ public class TimerClock : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        currentTime += Time.deltaTime * (24 / dayLength) * TimeSpeedup.speedup;
+        currentTime += Time.deltaTime * (24 / dayLength);
         // Время обновляется каждые 15 игровых минут
         if (Mathf.FloorToInt(currentTime % 60) % 15 == 0)
         {

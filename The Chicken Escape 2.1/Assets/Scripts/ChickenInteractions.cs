@@ -6,110 +6,95 @@ using TMPro;
 public class ChickenInteractions : MonoBehaviour
 {
     private Animator chickenAnimator;
-    public Button button;
-    public Button button2;
-    public Image progressBar;
 
     public bool isEating = false;
     public bool isDrinking = false;
     public bool isSleeping = false;
     public bool isLayingEgg = false;
 
-    private float layingEggTime = 50; // seconds for laying an egg
+    private float layingEggTime = 50;
     private int progress = 0;
     private float time = 0;
 
     void Start()
     {
         chickenAnimator = GetComponent<Animator>();
-        button.gameObject.SetActive(false);
-        button2.gameObject.SetActive(false);
-        progressBar.gameObject.SetActive(false);
     }
     private void OnTriggerStay2D(Collider2D other)
     {
         if (!CompareTag("Player"))
+        {
             return;
-        if (isEating || isDrinking || isSleeping || isLayingEgg)
-            return;
-        Vector3 otherCenter = other.bounds.center;
-        RectTransform buttonRectTransform = button.GetComponent<RectTransform>();
-        buttonRectTransform.position = otherCenter;
-        buttonRectTransform.anchoredPosition += new Vector2(0, 300);
+        }
+
+        ButtonsController.button.transform.position = other.bounds.center + new Vector3(0, 3);
+        
+        //Vector3 otherCenter = other.bounds.center;
+        //button.transform.position = otherCenter + new Vector3(0, 1);
+
+        //if (isEating || isDrinking || isSleeping || isLayingEgg)
+        //    return;
 
         if (other.CompareTag("Eat"))
         {
-            button.gameObject.SetActive(true);
-            button.GetComponentInChildren<TMP_Text>().text = "eat";
-            //button.onClick.RemoveAllListeners(); 
-            button.onClick.AddListener(delegate () {
-                button.GetComponentInChildren<TMP_Text>().text = "stop";
+            ButtonsController.button.gameObject.SetActive(true);
+            ButtonsController.button.GetComponentInChildren<TMP_Text>().text = "eat";
+            ButtonsController.button.onClick.RemoveAllListeners();
+            ButtonsController.button.onClick.AddListener(delegate () {
+                ButtonsController.button.GetComponentInChildren<TMP_Text>().text = "stop";
                 StartCoroutine(PlayEatAnimation());
             });
 
         }
         else if (other.CompareTag("Drink"))
         {
-            button.gameObject.SetActive(true);
-            button.GetComponentInChildren<TMP_Text>().text = "drink";
-            //button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(delegate () {
-                button.GetComponentInChildren<TMP_Text>().text = "stop";
+            ButtonsController.button.gameObject.SetActive(true);
+            ButtonsController.button.GetComponentInChildren<TMP_Text>().text = "drink";
+            ButtonsController.button.onClick.RemoveAllListeners();
+            ButtonsController.button.onClick.AddListener(delegate () {
+                ButtonsController.button.GetComponentInChildren<TMP_Text>().text = "stop";
                 StartCoroutine(PlayDrinkAnimation());
             });
         }
         else if (other.CompareTag("Sleep"))
         {
-            RectTransform button2RectTransform = button2.GetComponent<RectTransform>();
-            button2RectTransform.position = otherCenter;
-            button2RectTransform.anchoredPosition += new Vector2(0, 410);
-            Transform chickenRectTransform = GetComponent<Transform>();
-
-            RectTransform barRectTransform = progressBar.GetComponent<RectTransform>();
-            barRectTransform.position = otherCenter;
-            barRectTransform.anchoredPosition += new Vector2(0, 320);
-
-            button.gameObject.SetActive(true);
-            button2.gameObject.SetActive(true);
-            button.GetComponentInChildren<TMP_Text>().text = "sleep";
-            button2.GetComponentInChildren<TMP_Text>().text = "lay egg";
+            ButtonsController.button2.transform.position = other.bounds.center + new Vector3(0, 4);
+            ButtonsController.progressBar.transform.position = other.bounds.center + new Vector3(0, 3.5f);
+            ButtonsController.button.gameObject.SetActive(true);
+            ButtonsController.button2.gameObject.SetActive(true);
+            ButtonsController.button.GetComponentInChildren<TMP_Text>().text = "sleep";
+            ButtonsController.button2.GetComponentInChildren<TMP_Text>().text = "lay egg";
 
             //button.onClick.RemoveAllListeners();
             //button2.onClick.RemoveAllListeners();
-
             //sleep
-            button.onClick.AddListener(delegate () {
-                Vector3 targetCenter = otherCenter + new Vector3(0, -0.12f, 0);
-                chickenRectTransform.position = targetCenter;
-                button2.gameObject.SetActive(false);
-                button.GetComponentInChildren<TMP_Text>().text = "stop";
+            ButtonsController.button.onClick.AddListener(delegate () {
+                transform.position = other.bounds.center + new Vector3(0, -0.12f, 0);
+                ButtonsController.button2.gameObject.SetActive(false);
+                ButtonsController.button.GetComponentInChildren<TMP_Text>().text = "stop";
                 StartCoroutine(PlaySleepAnimation());
             });
             //lay egg
-            button2.onClick.AddListener(delegate () {
-                Vector3 targetCenter = otherCenter + new Vector3(0, -0.12f, 0);
-                chickenRectTransform.position = targetCenter;
-                button.gameObject.SetActive(false);
-                progressBar.gameObject.SetActive(true);
-                button2.GetComponentInChildren<TMP_Text>().text = "stop";
-                button2.onClick.AddListener(() => Stop());
-                StartCoroutine(LayEgg());
-                Egg egg = other.GetComponentInChildren<Egg>();
-                egg.gameObject.SetActive(true);
+            ButtonsController.button2.onClick.AddListener(delegate () {
+                transform.position = other.bounds.center + new Vector3(0, -0.12f, 0);
+                ButtonsController.button.gameObject.SetActive(false);
+                ButtonsController.progressBar.gameObject.SetActive(true);
+                ButtonsController.button2.GetComponentInChildren<TMP_Text>().text = "stop";
+                ButtonsController.button2.onClick.AddListener(() => Stop());
+                StartCoroutine(LayEgg(other));
             });
         }
     }
     private void OnTriggerExit2D(Collider2D other)
     {
-        button.gameObject.SetActive(false);
-        button2.gameObject.SetActive(false);
+        ButtonsController.Hide();
         Stop();
     }
     private void Stop()
     {
-        progressBar.gameObject.SetActive(false);
-        button.onClick.RemoveAllListeners();
-        button2.onClick.RemoveAllListeners();
+        ButtonsController.progressBar.gameObject.SetActive(false);
+        ButtonsController.button.onClick.RemoveAllListeners();
+        ButtonsController.button2.onClick.RemoveAllListeners();
         isEating = false;
         isDrinking = false;
         isSleeping = false;
@@ -121,7 +106,7 @@ public class ChickenInteractions : MonoBehaviour
     {
         isEating = true;
         chickenAnimator.Play("chicken_eat");
-        button.onClick.AddListener(() => Stop());
+        ButtonsController.button.onClick.AddListener(() => Stop());
         yield return new WaitForSeconds(4);
     }
 
@@ -129,17 +114,17 @@ public class ChickenInteractions : MonoBehaviour
     {
         isDrinking = true;
         chickenAnimator.Play("chicken_drink");
-        button.onClick.AddListener(() => Stop());
+        ButtonsController.button.onClick.AddListener(() => Stop());
         yield return new WaitForSeconds(5);
     }
     IEnumerator PlaySleepAnimation()
     {
         isSleeping = true;
         chickenAnimator.Play("chicken_sleep");
-        button.onClick.AddListener(() => Stop());
-        yield return new WaitForSeconds(30);
+        ButtonsController.button.onClick.AddListener(() => Stop());
+        yield return new WaitForSeconds(2);
     }
-    IEnumerator LayEgg()
+    IEnumerator LayEgg(Collider2D other)
     {
         isLayingEgg = true;
         chickenAnimator.Play("chicken_lay_egg");
@@ -150,13 +135,15 @@ public class ChickenInteractions : MonoBehaviour
             {
                 time = 0;
                 progress++;
-                progressBar.sprite = ProgressController.SetProgress(progress);
+                ButtonsController.progressBar.GetComponent<Image>().sprite = ButtonsController.progressBar.SetProgress(progress);
             }
             yield return null;
         }
         progress = 0;
-        progressBar.sprite = ProgressController.SetProgress(progress);
-        button2.gameObject.SetActive(false);
+        ButtonsController.progressBar.GetComponent<Image>().sprite = ButtonsController.progressBar.SetProgress(progress);
+        ButtonsController.button2.gameObject.SetActive(false);
+        Egg egg = other.GetComponentInChildren<Egg>();
+        egg.gameObject.SetActive(true);
         Stop();
     }
 }

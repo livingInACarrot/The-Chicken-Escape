@@ -5,7 +5,7 @@ public class PauseMenu : MonoBehaviour
 {
     public GameObject pauseMenuCanvas;
     public GameObject hideOnPausePanel; // Reference to the HideOnPause panel
-
+    public GameObject planButton;
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -36,6 +36,7 @@ public class PauseMenu : MonoBehaviour
         if (hideOnPausePanel != null)
         {
             hideOnPausePanel.SetActive(true); // Re-enable the HideOnPause panel when resuming
+            planButton.SetActive(true);
         }
     }
 
@@ -51,6 +52,7 @@ public class PauseMenu : MonoBehaviour
         if (hideOnPausePanel != null)
         {
             hideOnPausePanel.SetActive(false); // Disable the HideOnPause panel when pausing
+            planButton.SetActive(false);
         }
     }
 }

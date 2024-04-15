@@ -54,7 +54,7 @@ public class NeedsChanging : MonoBehaviour
                     foodXP++;
             }
         }
-        else if (chick.isDrinking)
+        if (chick.isDrinking)
         {
             if (currentTimeW > recoveringSpeedW)
             {
@@ -63,7 +63,7 @@ public class NeedsChanging : MonoBehaviour
                     waterXP++;
             }
         }
-        else if (chick.isSleeping)
+        if (chick.isSleeping)
         {
             if (currentTimeS > recoveringSpeedS)
             {
@@ -72,7 +72,7 @@ public class NeedsChanging : MonoBehaviour
                     sleepXP++;
             }
         }
-        else
+        if (!chick.isEating)
         {
             if (currentTimeF > decreasingSpeedF)
             {
@@ -80,12 +80,18 @@ public class NeedsChanging : MonoBehaviour
                 if (foodXP > 1)
                     foodXP--;
             }
+        }
+        if (!chick.isDrinking)
+        {
             if (currentTimeW > decreasingSpeedW)
             {
                 currentTimeW = 0;
                 if (waterXP > 1)
                     waterXP--;
             }
+        }
+        if (!chick.isSleeping)
+        {
             if (currentTimeS > decreasingSpeedS)
             {
                 currentTimeS = 0;

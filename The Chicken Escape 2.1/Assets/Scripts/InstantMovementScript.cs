@@ -2,8 +2,7 @@ using UnityEngine;
 using System.Collections;
 public class InstantMovementScript : MonoBehaviour
 {
-    public float moveSpeedInit = 7f;
-    private float moveSpeed;
+    public float moveSpeed;
     private Vector2 input;
     private Animator animator;
     private AudioManager audioManager;
@@ -20,20 +19,19 @@ public class InstantMovementScript : MonoBehaviour
     private Vector2 way;
     private float range = 1;
     private float pauseDuration = 4;
-    private float NPCmoveSpeedInit;
     private float NPCmoveSpeed;
     private float timer = 0;
     private bool isMoving;
 
     private void Start()
     {
+        moveSpeed = 8f;
         chick = GetComponent<ChickenInteractions>();
         rb = GetComponent<Rigidbody2D>();
         audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
         animator = GetComponent<Animator>();
         animator.speed = animationSpeed;
-        NPCmoveSpeedInit = moveSpeedInit / 3;
-        moveSpeed = moveSpeedInit;
+        NPCmoveSpeed = moveSpeed / 3;
         if (CompareTag("NPC"))
         {
             NewDestination();
@@ -44,9 +42,6 @@ public class InstantMovementScript : MonoBehaviour
 
     private void FixedUpdate()
     {
-        NPCmoveSpeed = NPCmoveSpeedInit * TimeSpeedup.speedup;
-        moveSpeed = moveSpeedInit * TimeSpeedup.speedup;
-        animator.speed = animationSpeed * TimeSpeedup.speedup;
         if (chick.isSleeping || chick.isLayingEgg)
             return;
         if (CompareTag("Player"))

@@ -6,6 +6,9 @@ public class Item : MonoBehaviour
 {
     private float range = 2f;
     private bool isCarrying = false;
+
+    public bool isOnEscapeZone = false;
+
     void Update()
     {
         if (!isCarrying)
@@ -17,7 +20,6 @@ public class Item : MonoBehaviour
 
     void OnMouseDown()
     {
-        Debug.Log("Pressed");
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         float distanceToPlayer = (player.transform.position - transform.position).magnitude;
 
@@ -25,5 +27,13 @@ public class Item : MonoBehaviour
             return;
 
         isCarrying = !isCarrying;
+        CheckZone();
+    }
+    void CheckZone()
+    {
+        if (isCarrying)
+            return;
+        EscapeZone zone = FindObjectOfType<EscapeZone>();
+        isOnEscapeZone = zone.IsOnZone(transform.position);
     }
 }
