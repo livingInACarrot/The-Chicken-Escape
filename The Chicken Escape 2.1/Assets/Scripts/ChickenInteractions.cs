@@ -12,9 +12,11 @@ public class ChickenInteractions : MonoBehaviour
     public bool isSleeping = false;
     public bool isLayingEgg = false;
 
+    private bool aborted = false;
+
     private float layingEggTime = 50;
     private int progress = 0;
-    private float time = 0;
+    private float currentProcessTime = 0;
 
     void Start()
     {
@@ -22,18 +24,14 @@ public class ChickenInteractions : MonoBehaviour
     }
     private void OnTriggerStay2D(Collider2D other)
     {
-        if (!CompareTag("Player"))
+        if (CompareTag("NPC"))
         {
             return;
         }
 
         ButtonsController.button.transform.position = other.bounds.center + new Vector3(0, 3);
-        
-        //Vector3 otherCenter = other.bounds.center;
-        //button.transform.position = otherCenter + new Vector3(0, 1);
-
-        //if (isEating || isDrinking || isSleeping || isLayingEgg)
-        //    return;
+        ButtonsController.button2.transform.position = other.bounds.center + new Vector3(0, 4);
+        ButtonsController.progressBar.transform.position = other.bounds.center + new Vector3(0, 3.1f);
 
         if (other.CompareTag("Eat"))
         {
@@ -58,31 +56,26 @@ public class ChickenInteractions : MonoBehaviour
         }
         else if (other.CompareTag("Sleep"))
         {
-            ButtonsController.button2.transform.position = other.bounds.center + new Vector3(0, 4);
-            ButtonsController.progressBar.transform.position = other.bounds.center + new Vector3(0, 3.5f);
-            ButtonsController.button.gameObject.SetActive(true);
-            ButtonsController.button2.gameObject.SetActive(true);
-            ButtonsController.button.GetComponentInChildren<TMP_Text>().text = "sleep";
-            ButtonsController.button2.GetComponentInChildren<TMP_Text>().text = "lay egg";
-
-            //button.onClick.RemoveAllListeners();
-            //button2.onClick.RemoveAllListeners();
-            //sleep
-            ButtonsController.button.onClick.AddListener(delegate () {
-                transform.position = other.bounds.center + new Vector3(0, -0.12f, 0);
-                ButtonsController.button2.gameObject.SetActive(false);
-                ButtonsController.button.GetComponentInChildren<TMP_Text>().text = "stop";
-                StartCoroutine(PlaySleepAnimation());
-            });
-            //lay egg
-            ButtonsController.button2.onClick.AddListener(delegate () {
-                transform.position = other.bounds.center + new Vector3(0, -0.12f, 0);
-                ButtonsController.button.gameObject.SetActive(false);
-                ButtonsController.progressBar.gameObject.SetActive(true);
-                ButtonsController.button2.GetComponentInChildren<TMP_Text>().text = "stop";
-                ButtonsController.button2.onClick.AddListener(() => Stop());
-                StartCoroutine(LayEgg(other));
-            });
+            if (!isSleeping && !isLayingEgg)
+            {
+                aborted = false;
+                ButtonsController.button.gameObject.SetActive(true);
+                ButtonsController.button2.gameObject.SetActive(true);
+                ButtonsController.button.GetComponentInChildren<TMP_Text>().text = "sleep";
+                ButtonsController.button2.GetComponentInChildren<TMP_Text>().text = "lay egg";
+                ButtonsController.button.onClick.AddListener(() => StartCoroutine(ISleep(other.bounds.center)));
+                ButtonsController.button2.onClick.AddListener(() => StartCoroutine(ILayEgg(other)));
+            }
+            else if (isSleeping)
+            {
+                //ButtonsController.button.onClick.AddListener(() => StartCoroutine(ISleep(other.bounds.center)));
+                return;
+            }
+            else if (isLayingEgg)
+            {
+                //ButtonsController.button2.onClick.AddListener(() => StartCoroutine(ILayEgg(other)));
+                return;
+            }
         }
     }
     private void OnTriggerExit2D(Collider2D other)
@@ -92,14 +85,9 @@ public class ChickenInteractions : MonoBehaviour
     }
     private void Stop()
     {
-        ButtonsController.progressBar.gameObject.SetActive(false);
-        ButtonsController.button.onClick.RemoveAllListeners();
-        ButtonsController.button2.onClick.RemoveAllListeners();
-        isEating = false;
-        isDrinking = false;
-        isSleeping = false;
-        isLayingEgg = false;
-        chickenAnimator.Play("chicken_idle");
+        //aborted = false;
+        ButtonsController.Refresh();
+        chickenAnimator.Play("chicken_run");
     }
 
     IEnumerator PlayEatAnimation()
@@ -117,33 +105,62 @@ public class ChickenInteractions : MonoBehaviour
         ButtonsController.button.onClick.AddListener(() => Stop());
         yield return new WaitForSeconds(5);
     }
-    IEnumerator PlaySleepAnimation()
+    IEnumerator ISleep(Vector3 bedPos)
     {
         isSleeping = true;
-        chickenAnimator.Play("chicken_sleep");
-        ButtonsController.button.onClick.AddListener(() => Stop());
-        yield return new WaitForSeconds(2);
-    }
-    IEnumerator LayEgg(Collider2D other)
-    {
-        isLayingEgg = true;
-        chickenAnimator.Play("chicken_lay_egg");
-        while (progress < 10)
-        {
-            time += Time.deltaTime;
-            if (time >= layingEggTime)
-            {
-                time = 0;
-                progress++;
-                ButtonsController.progressBar.GetComponent<Image>().sprite = ButtonsController.progressBar.SetProgress(progress);
-            }
-            yield return null;
-        }
-        progress = 0;
-        ButtonsController.progressBar.GetComponent<Image>().sprite = ButtonsController.progressBar.SetProgress(progress);
+        transform.position = bedPos + new Vector3(0, -0.12f, 0);
         ButtonsController.button2.gameObject.SetActive(false);
-        Egg egg = other.GetComponentInChildren<Egg>();
-        egg.gameObject.SetActive(true);
+        ButtonsController.button.GetComponentInChildren<TMP_Text>().text = "stop";
+        ButtonsController.button.onClick.RemoveAllListeners();
+        ButtonsController.button.onClick.AddListener(() => isSleeping = false);
+        yield return new WaitUntil(() => Sleep());
         Stop();
+    }
+    bool Sleep()
+    {
+        chickenAnimator.Play("chicken_sleep");
+        return !isSleeping;
+    }
+    IEnumerator ILayEgg(Collider2D bed)
+    {
+        transform.position = bed.bounds.center + new Vector3(0, -0.12f, 0);
+        ButtonsController.button.gameObject.SetActive(false);
+        ButtonsController.progressBar.gameObject.SetActive(true);
+        ButtonsController.button2.GetComponentInChildren<TMP_Text>().text = "stop";
+        ButtonsController.button2.onClick.AddListener(() => { 
+            isLayingEgg = false;
+            aborted = true;
+            Debug.Log(aborted);
+        });
+        ButtonsController.progressBar.GetComponent<Image>().sprite = ButtonsController.progressBar.SetProgress(progress);
+        isLayingEgg = true;
+        yield return new WaitUntil(() => LayEgg());
+        progress = 0;
+        ButtonsController.Hide();
+        Debug.Log(aborted);
+        if (!aborted)
+        {
+            bed.gameObject.transform.Find("egg").gameObject.SetActive(true);
+        }
+        Stop();
+    }
+    bool LayEgg()
+    {
+        if (!isLayingEgg)
+            return true;
+        chickenAnimator.Play("chicken_lay_egg");
+        currentProcessTime += Time.deltaTime;
+        if (currentProcessTime >= layingEggTime)
+        {
+            if (progress >= 10)
+            {
+                isLayingEgg = false;
+                return true;
+            }
+            currentProcessTime = 0;
+            ++progress;
+            ButtonsController.progressBar.GetComponent<Image>().sprite = ButtonsController.progressBar.SetProgress(progress);
+        }
+        return false;
     }
 }

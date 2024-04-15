@@ -25,4 +25,9 @@ public class ButtonsController : MonoBehaviour
         button2.gameObject.SetActive(false);
         progressBar.gameObject.SetActive(false);
     }
+    public static void Refresh()
+    {
+        button.onClick.RemoveAllListeners();
+        button2.onClick.RemoveAllListeners();
+    }
 }

@@ -32,6 +32,7 @@ public class ChangePlayer : MonoBehaviour
     {
         audioManager.PlaySound(audioManager.buttonClick);
         ButtonsController.Hide();
+        ButtonsController.Refresh();
 
         currentChicken = chickens[chickenNumber];
         currentChicken.tag = "Player";
