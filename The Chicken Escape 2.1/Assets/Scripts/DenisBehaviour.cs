@@ -18,6 +18,7 @@ public class DenisBehaviour : MonoBehaviour
     private float wateringTime = 7f;
     private float standingTimer = 0;
     private float standingTime = 7f;
+    private float pickingEggTime = 3f;
 
     public List<Transform> routePickEggs;
     public List<Transform> routeToBarn;
@@ -38,47 +39,47 @@ public class DenisBehaviour : MonoBehaviour
     }
     void Update()
     {
+        if (inProgress)
+            return;
+
         hours = TimerClock.Hours();
         minutes = TimerClock.Minutes();
 
-        if (!inProgress)
+        currentDestination = 0;
+        if (hours == 11 && minutes == 0)
         {
-            currentDestination = 0;
-            if (hours == 11 && minutes == 30)
-            {
-                way = routePickEggs[0].position;
-                MirrorAnimation();
-                //StartCoroutine(GoSomeWhere(PickEggs()));
-            }
-            if (hours == 13 && minutes == 0)
-            {
-                way = routeToBarn[0].position;
-                MirrorAnimation();
-                StartCoroutine(IGoToBarn());
-            }
-            if (hours == 15 && minutes == 0)
-            {
-                way = routeFromBarn[0].position;
-                MirrorAnimation();
-                StartCoroutine(IGoFromBarn());
-            }
-            if (hours == 17 && minutes == 0)
-            {
-                way = routeWaterGarden[0].position;
-                MirrorAnimation();
-                StartCoroutine(IWaterGarden());
-            }
-            if (hours == 20 && minutes == 0)
-            {
-                //way = routeBringChicksHome[0].position;
-                //MirrorAnimation();
-                //StartCoroutine(GoSomeWhere(BringChicksHome()));
-            }
+            way = routePickEggs[0].position;
+            MirrorAnimation();
+            StartCoroutine(IPickEggs());
+        }
+        if (hours == 13 && minutes == 0)
+        {
+            way = routeToBarn[0].position;
+            MirrorAnimation();
+            StartCoroutine(IGoToBarn());
+        }
+        if (hours == 15 && minutes == 0)
+        {
+            way = routeFromBarn[0].position;
+            MirrorAnimation();
+            StartCoroutine(IGoFromBarn());
+        }
+        if (hours == 17 && minutes == 0)
+        {
+            way = routeWaterGarden[0].position;
+            MirrorAnimation();
+            StartCoroutine(IWaterGarden());
+        }
+        if (hours == 20 && minutes == 0)
+        {
+            //way = routeBringChicksHome[0].position;
+            //MirrorAnimation();
+            //StartCoroutine(GoSomeWhere(BringChicksHome()));
         }
     }
     private void HideAllPoints()
     {
-        HideAllPoints(ref routePickEggs);
+        HideAllPointsExceptSome(ref routePickEggs, new List<int> { 8, 9, 10, 11, 14, 15, 16, 17 });
         HideAllPoints(ref routeToBarn);
         HideAllPoints(ref routeFromBarn);
         HideAllPoints(ref routeWaterGarden);
@@ -89,6 +90,14 @@ public class DenisBehaviour : MonoBehaviour
         foreach (var item in list) 
         {
             item.gameObject.SetActive(false);
+        }
+    }
+    private void HideAllPointsExceptSome(ref List<Transform> list, List<int> notHidden)
+    {
+        for (int i = 0; i < list.Count; ++i)
+        {
+            if (!notHidden.Contains(i))
+                list[i].gameObject.SetActive(false);
         }
     }
     private void MirrorAnimation()
@@ -240,6 +249,48 @@ public class DenisBehaviour : MonoBehaviour
                 way = routeWaterGarden[currentDestination].position;
                 MirrorAnimation();
             }
+        }
+        return false;
+    }
+    IEnumerator IPickEggs()
+    {
+        inProgress = true;
+        yield return new WaitUntil(() => PickEggs());
+        inProgress = false;
+    }
+    bool PickEggs()
+    {
+        animator.Play(ChooseAnimation());
+
+        if (isStanding)
+        {
+            standingTimer += Time.deltaTime;
+            if (standingTimer >= pickingEggTime)
+            {
+                standingTimer = 0;
+                isStanding = false;
+            }
+            return false;
+        }
+
+        transform.position = Vector2.MoveTowards(transform.position, way, speed * Time.deltaTime);
+        if (Vector2.Distance(transform.position, way) < range)
+        {
+            if (currentDestination >= 8 && currentDestination <= 11 || currentDestination >= 14 && currentDestination <= 17)
+            {
+                if (routePickEggs[currentDestination].Find("egg").gameObject.activeInHierarchy)
+                {
+                    isStanding = true;
+                    routePickEggs[currentDestination].Find("egg").gameObject.SetActive(false);
+                }
+            }
+            ++currentDestination;
+            if (currentDestination >= routePickEggs.Count)
+                return true;
+            way = routePickEggs[currentDestination].position;
+            if (currentDestination != 12 && currentDestination != 18)
+                way += new Vector2(0, -0.85f);
+            MirrorAnimation();
         }
         return false;
     }
