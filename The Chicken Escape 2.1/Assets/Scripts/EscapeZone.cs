@@ -38,6 +38,7 @@ public class EscapeZone : MonoBehaviour
                 button.gameObject.SetActive(false);
             }
         }
+
     }
     public void Click()
     {
@@ -47,8 +48,20 @@ public class EscapeZone : MonoBehaviour
     public bool IsOnZone(Vector3 pos)
     {
         BoxCollider2D col = GetComponent<BoxCollider2D>();
-        if (col.bounds.min.x < pos.x && col.bounds.max.x > pos.x && col.bounds.min.y < pos.y && col.bounds.max.y > pos.y)
+        // Calculate the actual bounds considering the Y offset of 500
+        Bounds adjustedBounds = new Bounds(col.bounds.center - new Vector3(0, 500, 0), col.bounds.size);
+
+        if (adjustedBounds.min.x < pos.x && adjustedBounds.max.x > pos.x &&
+            adjustedBounds.min.y < pos.y && adjustedBounds.max.y > pos.y)
+        {
+            Debug.Log("yes");
             return true;
-        return false;
+        }
+        else
+        {
+            Debug.Log("no");
+            return false;
+        }
     }
+
 }
