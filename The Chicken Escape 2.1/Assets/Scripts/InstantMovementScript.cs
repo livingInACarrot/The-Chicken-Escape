@@ -24,11 +24,16 @@ public class InstantMovementScript : MonoBehaviour
     private bool isMoving;
     public bool isChickenFree = false;
     public bool waypointOneReached = false;
+    public bool waypointOneBackReached = false;
+    public bool chickenStayed = false;
 
     private void Start()
     {
         isChickenFree = false;
         waypointOneReached = false;
+        waypointOneBackReached = false;
+        chickenStayed = false;
+
         moveSpeed = 8f;
         chick = GetComponent<ChickenInteractions>();
         rb = GetComponent<Rigidbody2D>();
@@ -51,7 +56,7 @@ public class InstantMovementScript : MonoBehaviour
 
         // Set chicken free status based on current time
         int currentHour = TimerClock.Hours();
-        isChickenFree = (currentHour >= 11 && currentHour < 22);
+        isChickenFree = (currentHour >= 12 && currentHour < 21);
 
         if (CompareTag("Player"))
             PlayerUpdate();
@@ -121,49 +126,61 @@ public class InstantMovementScript : MonoBehaviour
     {
         int currentHour = TimerClock.Hours();
         int currentMinute = TimerClock.Minutes();
-        Debug.Log(currentHour);
-        Debug.Log(currentMinute);
-        // If it's exactly 12:00, set destination to X15 Y-3.5
-        if (currentHour == 11 && (currentMinute > 0 && currentMinute < 11))
+
+        if ((currentHour == 12 && (currentMinute > 0 && currentMinute < 59)) && (chickenStayed == false))
         {
-            Debug.Log("HELLLO");
-            way = new Vector2(16, -3.5f);
-            Debug.Log(gameObject.name + " WAYPOINT: " + way);
-            isChickenFree = true;
+            way = new Vector2(17, -4);
+
             waypointOneReached = true;
+            chickenStayed = true;
         }
         else
         {
-            if(waypointOneReached)
+            if ((currentHour == 21 && (currentMinute > 0 && currentMinute < 59)) && (chickenStayed == true))
             {
-                Debug.Log(gameObject.name + " WAYPOINT 2: " + way);
-                way = new Vector2(12, -3.5f);
-                waypointOneReached = false;
-            }
-            else
-            {
-                float minX, maxX, minY, maxY;
-
-                if (isChickenFree)
+                if (waypointOneBackReached && chickenStayed == true)
                 {
-                    minX = -20;
-                    maxX = 14;
-                    minY = -15;
-                    maxY = 25;
+                    way = new Vector2(17, -4);
+                    isChickenFree = false;
+                    waypointOneBackReached = false;
+                    chickenStayed = false;
                 }
                 else
                 {
-                    minX = 17;
-                    maxX = 36;
-                    minY = -8;
-                    maxY = 3;
+                    way = new Vector2(13, -4);
+                    waypointOneBackReached = true;
                 }
-                way = new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
             }
-            //Debug.Log(way + gameObject.name);
-        }
+            else
+            {
+                if (waypointOneReached && chickenStayed == true)
+                {
+                    way = new Vector2(13, -4);
+                    waypointOneReached = false;
+                    isChickenFree = true;
+                }
+                else
+                {
+                    float minX, maxX, minY, maxY;
 
-        // Adjust the facing direction based on the new destination
+                    if (isChickenFree)
+                    {
+                        minX = -20;
+                        maxX = 14;
+                        minY = -15;
+                        maxY = 25;
+                    }
+                    else
+                    {
+                        minX = 17;
+                        maxX = 36;
+                        minY = -8;
+                        maxY = 3;
+                    }
+                    way = new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
+                }
+            }
+        }
         if (way.x < transform.position.x)
         {
             transform.localScale = new Vector3(-1, 1, 1);
@@ -172,6 +189,5 @@ public class InstantMovementScript : MonoBehaviour
         {
             transform.localScale = new Vector3(1, 1, 1);
         }
-        //Debug.Log(way);
     }
 }
