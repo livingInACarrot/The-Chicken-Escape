@@ -129,12 +129,17 @@ public class ChickenInteractions : MonoBehaviour
     IEnumerator ISleep(Vector3 bedPos)
     {
         isSleeping = true;
+        chickenAnimator.Play("chicken_sleep");
         transform.position = bedPos + new Vector3(0, -0.12f, 0);
         ButtonsController.button2.gameObject.SetActive(false);
         ButtonsController.button.GetComponentInChildren<TMP_Text>().text = "stop";
         ButtonsController.button.onClick.RemoveAllListeners();
         ButtonsController.button.onClick.AddListener(() => isSleeping = false);
-        yield return new WaitUntil(() => Sleep());
+        //yield return new WaitUntil(() => Sleep());
+        while (isSleeping)
+        {
+            yield return null;
+        }
         Stop();
     }
     bool Sleep()
