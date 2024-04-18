@@ -17,7 +17,7 @@ public class InstantMovementScript : MonoBehaviour
     public float animationSpeed = 1f;
 
     // NPC variables
-    private Vector2 way;
+    public Vector2 way;
     private float range = 1;
     private float maxDist = 7;
     private float pauseDuration = 7;

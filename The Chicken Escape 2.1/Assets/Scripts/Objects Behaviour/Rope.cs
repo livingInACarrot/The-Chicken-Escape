@@ -37,7 +37,7 @@ public class Rope : MonoBehaviour
         isCarrying = !isCarrying;
         if (isCarrying)
         {
-            rope.sprite = onChick;
+            rope.sprite = onGround; // onChick;
             Collider2D collider = GetComponent<Collider2D>();
             collider.offset = Vector2.zero;
         }

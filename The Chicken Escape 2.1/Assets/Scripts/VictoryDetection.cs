@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class VictoryDetection : MonoBehaviour
 {
-    public Canvas victoryScreenCanvas; // Assign this in the Unity Editor
+    public GameObject victoryScreenCanvas; // Assign this in the Unity Editor
 
     // Define the boundaries based on the coordinates provided
     private float minX = -18f;
@@ -10,14 +10,21 @@ public class VictoryDetection : MonoBehaviour
     private float minY = -19f;
     private float maxY = 9f;
 
+    public static bool won = false;
     // Update is called once per frame
     void Update()
     {
+        if (won)
+        {
+            victoryScreenCanvas.SetActive(true);
+        }
+        /*
         if (!IsWithinBounds(transform.position))
         {
             // Player has escaped, show the victory screen
             victoryScreenCanvas.gameObject.SetActive(true);
         }
+        */
     }
 
     private bool IsWithinBounds(Vector3 position)
