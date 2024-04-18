@@ -11,7 +11,7 @@ public class ChickenInteractions : MonoBehaviour
     public bool isDrinking = false;
     public bool isSleeping = false;
     public bool isLayingEgg = false;
-    public GameObject gate;
+    //public GameObject gate;
 
     private bool aborted = false;
 
@@ -36,11 +36,11 @@ public class ChickenInteractions : MonoBehaviour
         // If the current time is past 11:00 (660 minutes) and no egg has been laid, close the gate
         if (TimerClock.currentTime > 660 && !eggLaidToday)
         {
-            gate.GetComponent<BoxCollider2D>().enabled = true;
+            //gate.GetComponent<BoxCollider2D>().enabled = true;
         }
         else
         {
-            gate.GetComponent<BoxCollider2D>().enabled = false;
+            //gate.GetComponent<BoxCollider2D>().enabled = false;
         }
     }
     private void OnTriggerStay2D(Collider2D other)

@@ -9,6 +9,7 @@ public class InstantMovementScript : MonoBehaviour
     private AudioManager audioManager;
     private Rigidbody2D rb;
     private ChickenInteractions chick;
+    private CoopGate gate;
 
     // Variable for smoothing the speed parameter
     private float currentSpeed;
@@ -18,27 +19,25 @@ public class InstantMovementScript : MonoBehaviour
     // NPC variables
     private Vector2 way;
     private float range = 1;
-    private float pauseDuration = 4;
+    private float maxDist = 7;
+    private float pauseDuration = 7;
     private float NPCmoveSpeed;
     private float timer = 0;
     private bool isMoving;
     public bool isChickenFree = false;
-    public bool waypointOneReached = false;
-    public bool waypointOneBackReached = false;
     public bool chickenStayed = false;
+    private bool isLeavingCoop = false;
+    private bool isEnteringCoop = false;
+    private int pointIndex = 0;
 
     private void Start()
     {
-        isChickenFree = false;
-        waypointOneReached = false;
-        waypointOneBackReached = false;
-        chickenStayed = false;
-
         moveSpeed = 8f;
         chick = GetComponent<ChickenInteractions>();
         rb = GetComponent<Rigidbody2D>();
         audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
         animator = GetComponent<Animator>();
+        gate = FindObjectOfType<CoopGate>();
         animator.speed = animationSpeed;
         NPCmoveSpeed = moveSpeed / 3;
         if (CompareTag("NPC"))
@@ -54,7 +53,6 @@ public class InstantMovementScript : MonoBehaviour
         if (chick.isSleeping || chick.isLayingEgg)
             return;
 
-        // Set chicken free status based on current time
         int currentHour = TimerClock.Hours();
         isChickenFree = (currentHour >= 12 && currentHour < 21);
 
@@ -62,7 +60,6 @@ public class InstantMovementScript : MonoBehaviour
             PlayerUpdate();
         else if (CompareTag("NPC"))
             NPCUpdate();
-        //Debug.Log(isChickenFree);
     }
 
     private void FixedUpdate()
@@ -97,6 +94,17 @@ public class InstantMovementScript : MonoBehaviour
 
     private void NPCUpdate()
     {
+        if (TimerClock.Hours() == 12 && TimerClock.Minutes() == 0)
+        {
+            isLeavingCoop = true;
+            isChickenFree = true;
+        }
+        else if (TimerClock.Hours() == 21 && TimerClock.Minutes() == 0)
+        {
+            isEnteringCoop = true;
+            isChickenFree = false;
+        }
+
         if (isMoving)
         {
             if (Vector2.Distance(transform.position, way) > range)
@@ -111,7 +119,7 @@ public class InstantMovementScript : MonoBehaviour
         }
         else
         {
-            timer += Time.fixedDeltaTime;
+            timer += Time.deltaTime;
             if (timer >= pauseDuration)
             {
                 NewDestination();
@@ -124,63 +132,57 @@ public class InstantMovementScript : MonoBehaviour
 
     private void NewDestination()
     {
-        int currentHour = TimerClock.Hours();
-        int currentMinute = TimerClock.Minutes();
-
-        if ((currentHour == 12 && (currentMinute > 0 && currentMinute < 59)) && (chickenStayed == false))
+        if (isLeavingCoop)
         {
-            way = new Vector2(17, -4);
-
-            waypointOneReached = true;
-            chickenStayed = true;
+            way = gate.LeavingCoopPoints[pointIndex].position;
+            ++pointIndex;
+            if (pointIndex == gate.LeavingCoopPoints.Length)
+            {
+                isLeavingCoop = false;
+                pointIndex = 0;
+            }
+        }
+        else if (isEnteringCoop)
+        {
+            way = gate.EnteringCoopPoints[pointIndex].position;
+            ++pointIndex;
+            if (pointIndex == gate.LeavingCoopPoints.Length)
+            {
+                isEnteringCoop = false;
+                pointIndex = 0;
+            }
         }
         else
         {
-            if ((currentHour == 21 && (currentMinute > 0 && currentMinute < 59)) && (chickenStayed == true))
+            float minX, maxX, minY, maxY;
+
+            if (isChickenFree)
             {
-                if (waypointOneBackReached && chickenStayed == true)
-                {
-                    way = new Vector2(17, -4);
-                    isChickenFree = false;
-                    waypointOneBackReached = false;
-                    chickenStayed = false;
-                }
-                else
-                {
-                    way = new Vector2(13, -4);
-                    waypointOneBackReached = true;
-                }
+                minX = transform.position.x - maxDist;
+                maxX = transform.position.x + maxDist;
+                minY = transform.position.y - maxDist;
+                maxY = transform.position.y + maxDist;
             }
             else
             {
-                if (waypointOneReached && chickenStayed == true)
-                {
-                    way = new Vector2(13, -4);
-                    waypointOneReached = false;
-                    isChickenFree = true;
-                }
-                else
-                {
-                    float minX, maxX, minY, maxY;
-
-                    if (isChickenFree)
-                    {
-                        minX = -20;
-                        maxX = 14;
-                        minY = -15;
-                        maxY = 25;
-                    }
-                    else
-                    {
-                        minX = 17;
-                        maxX = 36;
-                        minY = -8;
-                        maxY = 3;
-                    }
-                    way = new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
-                }
+                minX = 17;
+                maxX = 36;
+                minY = -8;
+                maxY = 3;
             }
+            way = new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
         }
+
+        if (chickenStayed)
+        {
+            float minX, maxX, minY, maxY;
+            minX = 17;
+            maxX = 36;
+            minY = -8;
+            maxY = 3;
+            way = new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
+        }
+
         if (way.x < transform.position.x)
         {
             transform.localScale = new Vector3(-1, 1, 1);
