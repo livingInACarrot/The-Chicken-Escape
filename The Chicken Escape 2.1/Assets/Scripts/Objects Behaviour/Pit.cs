@@ -31,13 +31,13 @@ public class Pit : MonoBehaviour
 
     void OnMouseDown()
     {
-        Animate();
-    }
-    public void Animate()
-    {
         if (!SmallDistanceToPlayer())
             return;
+        Animate();
+    }
 
+    public void Animate()
+    {
         if (isAnimating || noBucket || noRope)
             return;
 

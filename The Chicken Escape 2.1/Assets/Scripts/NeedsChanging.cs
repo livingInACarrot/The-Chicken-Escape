@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,28 +18,35 @@ public class NeedsChanging : MonoBehaviour
     private float currentTimeF = 0;
     private float currentTimeW = 0;
     private float currentTimeS = 0;
+    private float lowFoodWaterTime = 0; // Таймер для низкого уровня еды/воды
 
     public int foodXP = 10;
     public int waterXP = 10;
     public int sleepXP = 10;
     public bool eggToday;
     public bool eggYesterday;
+    public bool isNugget = false;
+
+    public Sprite nuggetSprite;
 
     void Start()
     {
         chick = GetComponent<ChickenInteractions>();
         decreasingSpeedF = TimerClock.dayLength * 60 / 10 / 1.7f;
-        recoveringSpeedF = 2.5f;
+        recoveringSpeedF = 2;
         decreasingSpeedW = TimerClock.dayLength * 60 / 10 / 1.5f;
-        recoveringSpeedW = 2.5f;
+        recoveringSpeedW = 2;
         decreasingSpeedS = TimerClock.dayLength * 60 / 10 / 1f;
         recoveringSpeedS = TimerClock.dayLength * 60 / 10 / 24 * 8;
     }
     void Update()
     {
-        UpdateNeeds();
-        if (CompareTag("Player"))
-            NeedsController.ShowNeeds(this);
+        if (!isNugget) // Если ещё не превратились в наггетсы
+        {
+            UpdateNeeds();
+            if (CompareTag("Player"))
+                NeedsController.ShowNeeds(this);
+        }
     }
     public void UpdateNeeds()
     {
@@ -111,5 +118,42 @@ public class NeedsChanging : MonoBehaviour
                     sleepXP--;
             }
         }
+
+        if (foodXP <= 1 || waterXP <= 1)
+        {
+            lowFoodWaterTime += Time.deltaTime;
+            if (lowFoodWaterTime >= 10.0f) // Проверяем, достигли ли мы 40 секунд
+            {
+                BecomeNugget(); // Превращаемся в наггетсы
+            }
+        }
+        else
+        {
+            lowFoodWaterTime = 0; // Сброс таймера
+        }
+    }
+    void BecomeNugget()
+    {
+        isNugget = true;
+        gameObject.tag = "NPC"; // Изменяем тег, чтобы предотвратить взаимодействие с объектом
+
+        Animator animator = GetComponent<Animator>();
+        if (animator != null)
+        {
+            animator.enabled = false; // Отключаем аниматор
+        }
+
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null && nuggetSprite != null)
+        {
+            spriteRenderer.sprite = nuggetSprite; // Меняем спрайт на наггетс
+        }
+
+        // По желанию можно добавить задержку перед уничтожением объекта
+        Invoke("Disappear", 10.0f); // Уничтожаем объект через 5 секунд, если это необходимо
+    }
+    void Disappear()
+    {
+        Destroy(gameObject); // Уничтожаем объект
     }
 }

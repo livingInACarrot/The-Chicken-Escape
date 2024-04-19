@@ -27,8 +27,23 @@ public class ChangePlayer : MonoBehaviour
         chickButtons[0].image.sprite = selectedSprites[0];
     }
 
+    void Update()
+    {
+        for (int i = 0; i < chickens.Length; i++)
+        {
+            if (chickens[i].GetComponent<NeedsChanging>().isNugget)
+            {
+                chickButtons[i].interactable = false; // ?????? ?????? ??????????
+                chickButtons[i].image.color = new Color(1, 1, 1, 0.5f); // ????????? ????????????????
+            }
+        }
+    }
+
     public void ChooseChicken(int chickenNumber)
     {
+        if (chickens[chickenNumber].GetComponent<NeedsChanging>().isNugget)
+            return;
+
         audioManager.PlaySound(audioManager.buttonClick);
         ButtonsController.Hide();
         ButtonsController.Refresh();

@@ -29,6 +29,8 @@ public class InstantMovementScript : MonoBehaviour
     private bool isEnteringCoop = false;
     private int pointIndex = 0;
 
+    private NeedsChanging needsChanging;
+
     private void Start()
     {
         moveSpeed = 8f;
@@ -38,6 +40,8 @@ public class InstantMovementScript : MonoBehaviour
         gate = FindObjectOfType<CoopGate>();
         animator.speed = animationSpeed;
         NPCmoveSpeed = moveSpeed / 3;
+        needsChanging = GetComponent<NeedsChanging>(); // Get the NeedsChanging script
+
         if (CompareTag("NPC"))
         {
             NewDestination();
@@ -48,16 +52,22 @@ public class InstantMovementScript : MonoBehaviour
 
     private void Update()
     {
-        // If the chicken is sleeping or laying an egg, we should neither update the player controls nor NPC behavior.
+        if (needsChanging.isNugget) // Check if the chicken has become a nugget
+        {
+            rb.velocity = Vector2.zero;
+            animator.SetFloat("Speed", 0);
+            return; // Stop further processing
+        }
+
         if (chick.isSleeping || chick.isLayingEgg)
         {
-            // If the chicken is sleeping, ensure the sleeping animation plays endlessly.
-            if (chick.isSleeping && animator.GetCurrentAnimatorStateInfo(0).IsName("chicken_sleep") == false)
+            if (chick.isSleeping && !animator.GetCurrentAnimatorStateInfo(0).IsName("chicken_sleep"))
             {
                 animator.Play("chicken_sleep");
             }
             return; // Skip the rest of the update if sleeping or laying an egg.
         }
+
         if (CompareTag("Player"))
             PlayerUpdate();
         else if (CompareTag("NPC"))

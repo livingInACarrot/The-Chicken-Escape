@@ -67,7 +67,7 @@ public class DenisBehaviour : MonoBehaviour
             StartCoroutine(IGoFromBarn());
         }
         */
-        if (hours == 17 && minutes == 0)
+        if (hours == 16 && minutes == 0)
         {
             way = routeWaterGarden[0].position;
             MirrorAnimation();
