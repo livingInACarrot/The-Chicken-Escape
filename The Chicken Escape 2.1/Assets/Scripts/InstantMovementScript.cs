@@ -50,20 +50,46 @@ public class InstantMovementScript : MonoBehaviour
 
     private void Update()
     {
+        // If the chicken is sleeping or laying an egg, we should neither update the player controls nor NPC behavior.
         if (chick.isSleeping || chick.isLayingEgg)
-            return;
+        {
+            // If the chicken is sleeping, ensure the sleeping animation plays endlessly.
+            if (chick.isSleeping && animator.GetCurrentAnimatorStateInfo(0).IsName("chicken_sleep") == false)
+            {
+                animator.Play("chicken_sleep");
+            }
+            return; // Skip the rest of the update if sleeping or laying an egg.
+        }
 
-        int currentHour = TimerClock.Hours();
-        isChickenFree = (currentHour >= 12 && currentHour < 21);
+        // Check if it's past 11:00 AM and if the chicken has not laid an egg yet
+        if (TimerClock.currentTime > 660 && !chick.eggLaidToday)
+        {
+            isChickenFree = false;  // The chicken is not free to leave if it hasn't laid an egg
+        }
+        else
+        {
+            int currentHour = TimerClock.Hours();
+            isChickenFree = (currentHour >= 12 && currentHour < 21);  // Otherwise, follow the usual free-range hours
+        }
 
         if (CompareTag("Player"))
             PlayerUpdate();
         else if (CompareTag("NPC"))
             NPCUpdate();
+        Debug.Log(isChickenFree);
     }
+
 
     private void FixedUpdate()
     {
+        // FixedUpdate is typically used for physics updates. If the chicken is sleeping, it should not move.
+        if (chick.isSleeping || chick.isLayingEgg)
+        {
+            rb.velocity = Vector2.zero; // This ensures the chicken stops moving.
+            return; // Skip the rest of the FixedUpdate if sleeping or laying an egg.
+        }
+
+        // The rest of FixedUpdate is unchanged.
         if (CompareTag("Player"))
             PlayerUpdate();
         else if (CompareTag("NPC"))
@@ -76,6 +102,13 @@ public class InstantMovementScript : MonoBehaviour
         input.y = Input.GetAxisRaw("Vertical");
 
         Vector2 moveVector = new Vector2(input.x, input.y).normalized * moveSpeed;
+
+        // Condition to prevent movement past x=16 to the left if no egg has been laid after 11:00 AM
+        if (TimerClock.currentTime > 660 && !chick.eggLaidToday && rb.position.x <= 16 && input.x < 0)
+        {
+            moveVector.x = 0; // Disallow leftward movement
+        }
+
         rb.velocity = moveVector;
 
         if (input.x < 0)

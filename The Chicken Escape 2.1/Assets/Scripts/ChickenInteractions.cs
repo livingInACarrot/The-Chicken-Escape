@@ -11,12 +11,14 @@ public class ChickenInteractions : MonoBehaviour
     public bool isDrinking = false;
     public bool isSleeping = false;
     public bool isLayingEgg = false;
+
+    private string currentTag;
     //public GameObject gate;
 
     private bool aborted = false;
 
     private float layingEggTime = 50;
-    private bool eggLaidToday = false;
+    public bool eggLaidToday = false;
     private int progress = 0;
     private float currentProcessTime = 0;
 
@@ -24,11 +26,35 @@ public class ChickenInteractions : MonoBehaviour
     {
         chickenAnimator = GetComponent<Animator>();
         CheckGateStatus();
+        currentTag = gameObject.tag; // Store the initial tag
     }
 
-    private void Update()
+    void Update()
     {
         CheckGateStatus();
+        CheckForRoleChange();
+        //Debug.Log(gameObject.name + currentTag);// Add this line to check for tag changes
+    }
+    private void CheckForRoleChange()
+    {
+        // If the chicken's tag has changed to "Player" from "NPC"
+        if (gameObject.tag == "Player" && currentTag == "NPC")
+        {
+            // If the chicken was sleeping as an NPC, provide the option to stop
+            if (isSleeping)
+            {
+                // Enable the button and set the text to "stop"
+                ButtonsController.button.gameObject.SetActive(true);
+                ButtonsController.button.GetComponentInChildren<TMP_Text>().text = "stop";
+
+                // Make sure the button stops the sleeping when clicked
+                ButtonsController.button.onClick.RemoveAllListeners();
+                ButtonsController.button.onClick.AddListener(() => StopSleeping());
+            }
+        }
+
+        // Update the current tag for the next check
+        currentTag = gameObject.tag;
     }
 
     private void CheckGateStatus()
@@ -128,19 +154,66 @@ public class ChickenInteractions : MonoBehaviour
     }
     IEnumerator ISleep(Vector3 bedPos)
     {
-        isSleeping = true;
-        chickenAnimator.Play("chicken_sleep");
-        transform.position = bedPos + new Vector3(0, -0.12f, 0);
-        ButtonsController.button2.gameObject.SetActive(false);
-        ButtonsController.button.GetComponentInChildren<TMP_Text>().text = "stop";
-        ButtonsController.button.onClick.RemoveAllListeners();
-        ButtonsController.button.onClick.AddListener(() => isSleeping = false);
-        //yield return new WaitUntil(() => Sleep());
-        while (isSleeping)
+        // If already sleeping as an NPC, don't start the coroutine again
+        if (isSleeping && gameObject.tag == "NPC")
         {
+            yield break;
+        }
+
+        isSleeping = true;
+
+        // Set the sleep position only if it's the player to avoid teleporting NPCs
+        if (gameObject.tag == "Player")
+        {
+            transform.position = bedPos + new Vector3(0, -0.12f, 0);
+            // Since it's the player, activate the stop button
+            ButtonsController.button.gameObject.SetActive(true);
+            ButtonsController.button.GetComponentInChildren<TMP_Text>().text = "stop";
+            ButtonsController.button.onClick.RemoveAllListeners();
+            ButtonsController.button.onClick.AddListener(() => StopSleeping());
+        }
+        else
+        {
+            // If it's an NPC, deactivate the buttons
+            ButtonsController.button.gameObject.SetActive(false);
+            ButtonsController.button2.gameObject.SetActive(false);
+        }
+
+        chickenAnimator.Play("chicken_sleep");
+
+        // Continue this loop until the chicken is no longer sleeping or the tag changes
+        while (isSleeping && gameObject.tag == "NPC")
+        {
+            // Ensure the animation keeps playing
+            if (!chickenAnimator.GetCurrentAnimatorStateInfo(0).IsName("chicken_sleep"))
+            {
+                chickenAnimator.Play("chicken_sleep");
+            }
             yield return null;
         }
-        Stop();
+
+        // If the loop exits, check if it's because the chicken is no longer sleeping
+        if (!isSleeping)
+        {
+            StopSleeping();
+        }
+        else if (gameObject.tag == "Player")
+        {
+            // When switching back to player, make sure the stop button is available
+            ButtonsController.button.gameObject.SetActive(true);
+            ButtonsController.button.GetComponentInChildren<TMP_Text>().text = "stop";
+            ButtonsController.button.onClick.RemoveAllListeners();
+            ButtonsController.button.onClick.AddListener(() => StopSleeping());
+        }
+    }
+
+    private void StopSleeping()
+    {
+        isSleeping = false;
+        chickenAnimator.Play("chicken_run");
+        ButtonsController.Refresh();
+        // Deactivate the stop button
+        ButtonsController.button.gameObject.SetActive(false);
     }
     bool Sleep()
     {
