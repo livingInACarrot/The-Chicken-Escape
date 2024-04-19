@@ -20,8 +20,7 @@ public class Wood : MonoBehaviour
         if (!isCarrying || !isPulled)
             return;
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        transform.position = player.transform.position;
-        transform.position += new Vector3(0, 0.7f);
+        transform.position = player.transform.position + new Vector3(0, 0.76f);
     }
 
     public void OnMouseDown()

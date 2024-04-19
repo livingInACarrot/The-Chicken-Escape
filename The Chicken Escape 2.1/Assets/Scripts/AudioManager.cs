@@ -60,9 +60,6 @@ public class AudioManager : MonoBehaviour
         musicSource.volume = musicVolume;
         soundsSource.volume = soundsVolume;
         AudioListener.volume = masterVolume;
-
-        // Log the loaded values for debugging purposes
-        Debug.Log($"Loaded volumes: Master={masterVolume}, Music={musicVolume}, Sounds={soundsVolume}");
     }
 
 
@@ -80,7 +77,8 @@ public class AudioManager : MonoBehaviour
                 PlayBirds(birdsSing);
                 break;
             case 7:
-                StartCoroutine(RaiseAudioSource(musicSource, TimerClock.dayLength * 60 / 24 - 1, musicVolume));
+                if (musicSource.volume == 0)
+                    StartCoroutine(RaiseAudioSource(musicSource, TimerClock.dayLength * 60 / 24 - 1, musicVolume));
                 break;
             case 22:
                 PlayBirds(cicadas);

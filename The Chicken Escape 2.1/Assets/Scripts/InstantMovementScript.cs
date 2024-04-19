@@ -6,7 +6,6 @@ public class InstantMovementScript : MonoBehaviour
     public float moveSpeed;
     private Vector2 input;
     private Animator animator;
-    private AudioManager audioManager;
     private Rigidbody2D rb;
     private ChickenInteractions chick;
     private CoopGate gate;
@@ -23,7 +22,7 @@ public class InstantMovementScript : MonoBehaviour
     private float pauseDuration = 7;
     private float NPCmoveSpeed;
     private float timer = 0;
-    private bool isMoving;
+    public bool isMoving;
     public bool isChickenFree = false;
     public bool chickenStayed = false;
     private bool isLeavingCoop = false;
@@ -35,7 +34,6 @@ public class InstantMovementScript : MonoBehaviour
         moveSpeed = 8f;
         chick = GetComponent<ChickenInteractions>();
         rb = GetComponent<Rigidbody2D>();
-        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
         animator = GetComponent<Animator>();
         gate = FindObjectOfType<CoopGate>();
         animator.speed = animationSpeed;
@@ -60,26 +58,26 @@ public class InstantMovementScript : MonoBehaviour
             }
             return; // Skip the rest of the update if sleeping or laying an egg.
         }
-
+        /*
         // Check if it's past 11:00 AM and if the chicken has not laid an egg yet
         if (TimerClock.currentTime > 660 && !chick.eggLaidToday)
         {
             isChickenFree = false;  // The chicken is not free to leave if it hasn't laid an egg
         }
+        
         else
         {
             int currentHour = TimerClock.Hours();
             isChickenFree = (currentHour >= 12 && currentHour < 21);  // Otherwise, follow the usual free-range hours
         }
-
+        */
         if (CompareTag("Player"))
             PlayerUpdate();
         else if (CompareTag("NPC"))
             NPCUpdate();
-        Debug.Log(isChickenFree);
     }
 
-
+    /*
     private void FixedUpdate()
     {
         // FixedUpdate is typically used for physics updates. If the chicken is sleeping, it should not move.
@@ -95,6 +93,7 @@ public class InstantMovementScript : MonoBehaviour
         else if (CompareTag("NPC"))
             NPCUpdate();
     }
+    */
 
     private void PlayerUpdate()
     {
@@ -104,7 +103,7 @@ public class InstantMovementScript : MonoBehaviour
         Vector2 moveVector = new Vector2(input.x, input.y).normalized * moveSpeed;
 
         // Condition to prevent movement past x=16 to the left if no egg has been laid after 11:00 AM
-        if (TimerClock.currentTime > 660 && !chick.eggLaidToday && rb.position.x <= 16 && input.x < 0)
+        if (!chick.eggLaidToday && rb.position.x <= 16.7f && input.x < 0)
         {
             moveVector.x = 0; // Disallow leftward movement
         }
@@ -129,12 +128,16 @@ public class InstantMovementScript : MonoBehaviour
     {
         if (TimerClock.Hours() == 12 && TimerClock.Minutes() == 0)
         {
-            isLeavingCoop = true;
-            isChickenFree = true;
+            if (chick.eggLaidToday)
+            {
+                isLeavingCoop = true;
+                isChickenFree = true;
+            }
         }
         else if (TimerClock.Hours() == 21 && TimerClock.Minutes() == 0)
         {
-            isEnteringCoop = true;
+            if (chick.eggLaidToday)
+                isEnteringCoop = true;
             isChickenFree = false;
         }
 

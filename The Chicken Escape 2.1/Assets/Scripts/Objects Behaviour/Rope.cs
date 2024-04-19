@@ -23,8 +23,7 @@ public class Rope : MonoBehaviour
         if (!isCarrying)
             return;
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        transform.position = player.transform.position;
-        transform.position += new Vector3(0, 0.6f);
+        transform.position = player.transform.position + new Vector3(0, 0.7f);
     }
 
     void OnMouseDown()

@@ -11,7 +11,7 @@ public class TimerClock : MonoBehaviour
 
     void Start()
     {     
-        currentTime = 10.75f * 60;   // Start at 11:00 in minutes
+        currentTime = 5f * 60;
         //currentTime = 16.5f * 60;
         UpdateTimeText();
         UpdateDayText();

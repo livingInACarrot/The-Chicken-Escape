@@ -25,13 +25,11 @@ public class ChickenInteractions : MonoBehaviour
     void Start()
     {
         chickenAnimator = GetComponent<Animator>();
-        CheckGateStatus();
         currentTag = gameObject.tag; // Store the initial tag
     }
 
     void Update()
     {
-        CheckGateStatus();
         CheckForRoleChange();
         //Debug.Log(gameObject.name + currentTag);// Add this line to check for tag changes
     }
@@ -52,22 +50,8 @@ public class ChickenInteractions : MonoBehaviour
                 ButtonsController.button.onClick.AddListener(() => StopSleeping());
             }
         }
-
         // Update the current tag for the next check
         currentTag = gameObject.tag;
-    }
-
-    private void CheckGateStatus()
-    {
-        // If the current time is past 11:00 (660 minutes) and no egg has been laid, close the gate
-        if (TimerClock.currentTime > 660 && !eggLaidToday)
-        {
-            //gate.GetComponent<BoxCollider2D>().enabled = true;
-        }
-        else
-        {
-            //gate.GetComponent<BoxCollider2D>().enabled = false;
-        }
     }
     private void OnTriggerStay2D(Collider2D other)
     {
@@ -107,7 +91,8 @@ public class ChickenInteractions : MonoBehaviour
             {
                 aborted = false;
                 ButtonsController.button.gameObject.SetActive(true);
-                ButtonsController.button2.gameObject.SetActive(true);
+                if (TimerClock.Hours() >= 5 && TimerClock.Hours() <= 10)
+                    ButtonsController.button2.gameObject.SetActive(true);
                 ButtonsController.button.GetComponentInChildren<TMP_Text>().text = "sleep";
                 ButtonsController.button2.GetComponentInChildren<TMP_Text>().text = "lay egg";
                 ButtonsController.button.onClick.AddListener(() => StartCoroutine(ISleep(other.bounds.center)));
@@ -231,7 +216,8 @@ public class ChickenInteractions : MonoBehaviour
             aborted = true;
             Debug.Log(aborted);
         });
-        ButtonsController.progressBar.GetComponent<Image>().sprite = ButtonsController.progressBar.SetProgress(progress);
+        if (CompareTag("Player"))
+            ButtonsController.progressBar.GetComponent<Image>().sprite = ButtonsController.progressBar.SetProgress(progress);
         isLayingEgg = true;
         yield return new WaitUntil(() => LayEgg());
         progress = 0;
@@ -243,7 +229,6 @@ public class ChickenInteractions : MonoBehaviour
             bed.gameObject.transform.Find("egg").gameObject.SetActive(true);
         }
         Stop();
-        CheckGateStatus();
     }
     bool LayEgg()
     {
@@ -260,7 +245,8 @@ public class ChickenInteractions : MonoBehaviour
             }
             currentProcessTime = 0;
             ++progress;
-            ButtonsController.progressBar.GetComponent<Image>().sprite = ButtonsController.progressBar.SetProgress(progress);
+            if (CompareTag("Player"))
+                ButtonsController.progressBar.GetComponent<Image>().sprite = ButtonsController.progressBar.SetProgress(progress);
         }
         return false;
     }

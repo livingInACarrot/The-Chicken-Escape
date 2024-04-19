@@ -12,7 +12,6 @@ public class ChangePlayer : MonoBehaviour
     public Button[] chickButtons;
     public Sprite[] defaultSprites;
     public Sprite[] selectedSprites;
-
     void Start()
     {
         audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
@@ -33,6 +32,8 @@ public class ChangePlayer : MonoBehaviour
         audioManager.PlaySound(audioManager.buttonClick);
         ButtonsController.Hide();
         ButtonsController.Refresh();
+        currentChicken.GetComponent<Animator>().SetFloat("Speed", 0);
+        currentChicken.GetComponent<InstantMovementScript>().isMoving = false;
 
         currentChicken = chickens[chickenNumber];
         currentChicken.tag = "Player";
