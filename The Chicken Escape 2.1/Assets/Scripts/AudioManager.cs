@@ -52,7 +52,7 @@ public class AudioManager : MonoBehaviour
     private void LoadAndApplyVolumeSettings()
     {
         // Load volume settings from PlayerPrefs
-        float musicVolume = PlayerPrefs.GetFloat(MusicVolumeKey, 0.2f);
+        float musicVolume = PlayerPrefs.GetFloat(MusicVolumeKey, 0.1f);
         float soundsVolume = PlayerPrefs.GetFloat(SoundsVolumeKey, 0.75f);
         float masterVolume = PlayerPrefs.GetFloat(MasterVolumeKey, 1f);
 

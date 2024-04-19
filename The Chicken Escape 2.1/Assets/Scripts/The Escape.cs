@@ -80,13 +80,14 @@ public class TheEscape : MonoBehaviour
     // escapeBut click
     public void Escape4()
     {
+
         StartCoroutine(PlayCatapultAnimation());
         escapeBut.gameObject.SetActive(false);
     }
     IEnumerator PlayCatapultAnimation()
     {
         var player = GameObject.FindGameObjectWithTag("Player");
-        //player.gameObject.SetActive(false);
+        player.gameObject.SetActive(false);
         Animator catAnim = catapult.GetComponent<Animator>();
         catAnim.SetTrigger("play");
         while (catAnim.GetCurrentAnimatorStateInfo(0).IsName("catapult"))
@@ -94,8 +95,9 @@ public class TheEscape : MonoBehaviour
             yield return null;
         }
         catAnim.SetTrigger("none");
+        yield return new WaitForSeconds(1.17f);
         player.gameObject.transform.position = catapult.gameObject.transform.position + new Vector3(-3.24f, 1.21f);
-        //player.gameObject.SetActive(true);
+        player.gameObject.SetActive(true);
         yield return new WaitForSeconds(3);
         VictoryDetection.won = true;
     }
