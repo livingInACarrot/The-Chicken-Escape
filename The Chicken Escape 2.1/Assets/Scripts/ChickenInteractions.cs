@@ -11,14 +11,13 @@ public class ChickenInteractions : MonoBehaviour
     public bool isDrinking = false;
     public bool isSleeping = false;
     public bool isLayingEgg = false;
-
+    public bool eggLaidToday = false;
+    public bool eggLaidYesterday = true;
     private string currentTag;
     //public GameObject gate;
 
     private bool aborted = false;
-
     private float layingEggTime = 50;
-    public bool eggLaidToday = false;
     private int progress = 0;
     private float currentProcessTime = 0;
 
@@ -91,7 +90,7 @@ public class ChickenInteractions : MonoBehaviour
             {
                 aborted = false;
                 ButtonsController.button.gameObject.SetActive(true);
-                if (TimerClock.Hours() >= 5 && TimerClock.Hours() <= 10)
+                if (TimerClock.Hours() >= 5 && TimerClock.Hours() <= 10 && !eggLaidToday)
                     ButtonsController.button2.gameObject.SetActive(true);
                 ButtonsController.button.GetComponentInChildren<TMP_Text>().text = "sleep";
                 ButtonsController.button2.GetComponentInChildren<TMP_Text>().text = "lay egg";

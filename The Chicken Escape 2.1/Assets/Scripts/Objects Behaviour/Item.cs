@@ -15,7 +15,7 @@ public class Item : MonoBehaviour
             return;
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         transform.position = player.transform.position;
-        transform.position += new Vector3(0, 0.7f);
+        transform.position += new Vector3(0, 0.76f);
     }
 
     void OnMouseDown()

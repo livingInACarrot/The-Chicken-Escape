@@ -22,16 +22,17 @@ public class NeedsChanging : MonoBehaviour
     public int foodXP = 10;
     public int waterXP = 10;
     public int sleepXP = 10;
-    public int eggs = 1;
+    public bool eggToday;
+    public bool eggYesterday;
 
     void Start()
     {
         chick = GetComponent<ChickenInteractions>();
-        decreasingSpeedF = TimerClock.dayLength * 60 / 10 / 2.4f;
+        decreasingSpeedF = TimerClock.dayLength * 60 / 10 / 1.7f;
         recoveringSpeedF = 2.5f;
-        decreasingSpeedW = TimerClock.dayLength * 60 / 10 / 2f;
+        decreasingSpeedW = TimerClock.dayLength * 60 / 10 / 1.5f;
         recoveringSpeedW = 2.5f;
-        decreasingSpeedS = TimerClock.dayLength * 60 / 10 / 1.3f;
+        decreasingSpeedS = TimerClock.dayLength * 60 / 10 / 1f;
         recoveringSpeedS = TimerClock.dayLength * 60 / 10 / 24 * 8;
     }
     void Update()
@@ -42,6 +43,17 @@ public class NeedsChanging : MonoBehaviour
     }
     public void UpdateNeeds()
     {
+        if (TimerClock.Hours() == 0 && TimerClock.Minutes() == 0)
+        {
+            chick.eggLaidYesterday = chick.eggLaidToday;
+        }
+        if (TimerClock.Hours() == 0 && TimerClock.Minutes() == 1)
+        {
+            chick.eggLaidToday = false;
+        }
+        eggToday = chick.eggLaidToday;
+        eggYesterday = chick.eggLaidYesterday;
+
         currentTimeF += Time.deltaTime;
         currentTimeW += Time.deltaTime;
         currentTimeS += Time.deltaTime;

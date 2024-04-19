@@ -52,18 +52,21 @@ public class DenisBehaviour : MonoBehaviour
             MirrorAnimation();
             StartCoroutine(IPickEggs());
         }
+        /*
         if (hours == 13 && minutes == 0)
         {
             way = routeToBarn[0].position;
             MirrorAnimation();
             StartCoroutine(IGoToBarn());
         }
+
         if (hours == 15 && minutes == 0)
         {
             way = routeFromBarn[0].position;
             MirrorAnimation();
             StartCoroutine(IGoFromBarn());
         }
+        */
         if (hours == 17 && minutes == 0)
         {
             way = routeWaterGarden[0].position;

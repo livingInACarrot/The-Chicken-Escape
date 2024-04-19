@@ -25,6 +25,15 @@ public class NeedsController : MonoBehaviour
     public Sprite xp2;
     public Sprite xp1;
 
+    public Image egg1ImageInit;
+    public Image egg2ImageInit;
+    public static Image egg1Image;
+    public static Image egg2Image;
+    public Sprite eggFullInit;
+    public Sprite eggEmptyInit;
+    public static Sprite eggFull;
+    public static Sprite eggEmpty;
+
     void Start()
     {
         dict = new()
@@ -43,11 +52,18 @@ public class NeedsController : MonoBehaviour
         foodImage = foodImageInit;
         waterImage = waterImageInit;
         sleepImage = sleepImageInit;
+        egg1Image = egg1ImageInit;
+        egg2Image = egg2ImageInit;
+        eggFull = eggFullInit;
+        eggEmpty = eggEmptyInit;
+
     }
     public static void ShowNeeds(NeedsChanging chick)
     {
         foodImage.sprite = dict[chick.foodXP];
         waterImage.sprite = dict[chick.waterXP];
         sleepImage.sprite = dict[chick.sleepXP];
+        egg1Image.sprite = chick.eggYesterday ? eggFull : eggEmpty;
+        egg2Image.sprite = chick.eggToday ? eggFull : eggEmpty;
     }
 }

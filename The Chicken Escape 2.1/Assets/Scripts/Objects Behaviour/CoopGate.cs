@@ -19,11 +19,11 @@ public class CoopGate : MonoBehaviour
         {
             openedGate.SetActive(true);
         }
-        else if (TimerClock.Hours() == 12 && TimerClock.Minutes() == 0)
+        else if (TimerClock.Hours() == 12)
         {
             gameObject.SetActive(false);
         }
-        else if (TimerClock.Hours() == 22 && TimerClock.Minutes() == 0)
+        else if (TimerClock.Hours() == 22)
         {
             gameObject.SetActive(true);
             openedGate.SetActive(false);

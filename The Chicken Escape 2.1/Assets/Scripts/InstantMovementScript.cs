@@ -58,19 +58,6 @@ public class InstantMovementScript : MonoBehaviour
             }
             return; // Skip the rest of the update if sleeping or laying an egg.
         }
-        /*
-        // Check if it's past 11:00 AM and if the chicken has not laid an egg yet
-        if (TimerClock.currentTime > 660 && !chick.eggLaidToday)
-        {
-            isChickenFree = false;  // The chicken is not free to leave if it hasn't laid an egg
-        }
-        
-        else
-        {
-            int currentHour = TimerClock.Hours();
-            isChickenFree = (currentHour >= 12 && currentHour < 21);  // Otherwise, follow the usual free-range hours
-        }
-        */
         if (CompareTag("Player"))
             PlayerUpdate();
         else if (CompareTag("NPC"))
@@ -182,7 +169,7 @@ public class InstantMovementScript : MonoBehaviour
         {
             way = gate.EnteringCoopPoints[pointIndex].position;
             ++pointIndex;
-            if (pointIndex == gate.LeavingCoopPoints.Length)
+            if (pointIndex == gate.EnteringCoopPoints.Length)
             {
                 isEnteringCoop = false;
                 pointIndex = 0;
